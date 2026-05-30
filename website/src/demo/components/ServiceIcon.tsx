@@ -62,18 +62,19 @@ function EmojiIcon({ emoji, s }: { emoji: string; s: IconSize }) {
 // site uses). Anything missing or that 404s falls back to the monogram, so the
 // map can be generous without risking broken images.
 const CDN = 'https://registry.npmmirror.com/@lobehub/icons-static-png/1.24.0/files/dark'
+// Filenames verified to exist on this CDN version; unmapped/missing keys fall
+// back to the monogram (so there are no broken images or 404s).
 const CDN_ICONS: Record<string, string> = {
   OpenAI: 'openai', Codex: 'openai', Claude: 'claude-color', ClaudeCode: 'claude-color',
-  Gemini: 'gemini-color', NanoBanana: 'gemini-color', AiStudio: 'aistudio-color', Grok: 'grok',
+  Gemini: 'gemini-color', NanoBanana: 'gemini-color', Grok: 'grok',
   Cursor: 'cursor', Midjourney: 'midjourney', Perplexity: 'perplexity-color',
   GithubCopilot: 'githubcopilot', Copilot: 'githubcopilot', Github: 'github', Vercel: 'vercel',
-  Railway: 'railway', Cloudflare: 'cloudflare-color', Aws: 'aws-color',
-  GoogleCloud: 'googlecloud-color', Azure: 'azure-color', HuaweiCloud: 'huaweicloud-color',
-  Notion: 'notion', DeepL: 'deepl-color', HuggingFace: 'huggingface-color', Figma: 'figma-color',
-  Adobe: 'adobe', Google: 'google-color', Apple: 'apple', Qwen: 'qwen-color', Doubao: 'doubao-color',
-  Kimi: 'kimi-color', Minimax: 'minimax-color', Kling: 'kling-color', TencentCloud: 'tencentcloud-color',
-  AlibabaCloud: 'alibabacloud-color', Bailian: 'alibabacloud-color', ZAI: 'zhipu-color',
-  Lovable: 'lovable', Manus: 'manus', Stability: 'stability-color', Dalle: 'dalle', Coze: 'coze',
+  Cloudflare: 'cloudflare-color', Aws: 'aws-color', Azure: 'azure-color',
+  Notion: 'notion', HuggingFace: 'huggingface-color', Adobe: 'adobe', Google: 'google-color',
+  Qwen: 'qwen-color', Doubao: 'doubao-color', Kimi: 'kimi-color', Minimax: 'minimax-color',
+  Kling: 'kling-color', TencentCloud: 'tencentcloud-color', AlibabaCloud: 'alibabacloud-color',
+  Bailian: 'alibabacloud-color', ZAI: 'zhipu-color', Stability: 'stability-color',
+  Dalle: 'dalle', Coze: 'coze', OpenRouter: 'openrouter',
 }
 
 export default function ServiceIcon({ iconKey, name, large, size }: { iconKey: string | null; name: string; large?: boolean; size?: IconSize }) {

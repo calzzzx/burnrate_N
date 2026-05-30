@@ -62,8 +62,8 @@ function seed() {
     { name: 'Cursor', icon_key: 'Cursor', tier: 'Pro', amount: 20, currency: 'USD', cycle: 'monthly', next_billing: shift(2, 0), start_date: shift(0, -3), payment_channel: 'Visa ····6880' },
     { name: 'GitHub Copilot', icon_key: 'Github', amount: 10, currency: 'USD', cycle: 'monthly', next_billing: shift(17, 0), start_date: shift(0, -11), payment_channel: 'App Store' },
     { name: 'Notion', icon_key: 'Notion', amount: 10, currency: 'USD', cycle: 'monthly', next_billing: shift(21, 0), start_date: shift(-2, -12) },
-    { name: 'Netflix', icon_key: 'Netflix', tier: 'Premium', amount: 15.49, currency: 'USD', cycle: 'monthly', next_billing: shift(6, 0), start_date: shift(0, -9), payment_channel: '微信支付' },
-    { name: 'Bilibili 大会员', icon_key: 'Bilibili', amount: 25, currency: 'CNY', cycle: 'monthly', next_billing: shift(9, 0), start_date: shift(0, -5), payment_channel: '支付宝' },
+    { name: 'Netflix', icon_key: 'Netflix', tier: 'Premium', amount: 15.49, currency: 'USD', cycle: 'monthly', next_billing: shift(6, 0), start_date: shift(0, -9), payment_channel: 'WeChat Pay' },
+    { name: 'Bilibili 大会员', icon_key: 'Bilibili', amount: 25, currency: 'CNY', cycle: 'monthly', next_billing: shift(9, 0), start_date: shift(0, -5), payment_channel: 'Alipay' },
     { name: 'iCloud+', icon_key: 'iCloud', amount: 6, currency: 'CNY', cycle: 'monthly', next_billing: shift(14, 0), start_date: shift(0, -14), payment_channel: 'App Store' },
     { name: 'Namecheap', icon_key: 'Namecheap', amount: 12.98, currency: 'USD', cycle: 'yearly', next_billing: shift(40, 0), start_date: shift(0, -10) },
     // Archived (canceled, expired) — appears under the archive tab

@@ -19,7 +19,13 @@ function HeroMockup() {
   const [mounted, setMounted] = useState(false)
   // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot "client mounted" flag
   useEffect(() => setMounted(true), [])
-  return mounted ? <InteractiveDemo /> : <AppMockup />
+  // Fixed-height, top-aligned slot: the panel keeps a constant height and the
+  // AppMockup→demo swap stays in place, so nothing around the hero reflows.
+  return (
+    <div className="flex items-start justify-center h-[590px]">
+      {mounted ? <InteractiveDemo /> : <AppMockup />}
+    </div>
+  )
 }
 
 const container = {
