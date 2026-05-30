@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Subscription } from '../types'
 import { type ExchangeRates } from '../lib/currency'
 import { getCategoryTotals } from '../lib/categories'
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function CategoryBar({ subscriptions, displayCurrency, exchangeRates }: Props) {
+  const { t } = useTranslation()
   const categories = useMemo(
     () => getCategoryTotals(subscriptions, displayCurrency, exchangeRates),
     [subscriptions, displayCurrency, exchangeRates]
@@ -51,7 +53,7 @@ export default function CategoryBar({ subscriptions, displayCurrency, exchangeRa
               style={{ backgroundColor: cat.color }}
             />
             <span className="text-[11px] text-text-quaternary">
-              {cat.label}
+              {t(`category.${cat.key}`, { defaultValue: cat.label })}
             </span>
           </div>
         ))}

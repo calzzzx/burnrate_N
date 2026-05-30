@@ -280,3 +280,9 @@ select:not(.mac-select) {
   padding-right: 30px;
   cursor: default;
 }
+
+/* Give number steppers a little breathing room from the value */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  margin-left: 6px;
+}

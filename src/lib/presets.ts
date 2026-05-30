@@ -104,6 +104,14 @@ export const SERVICE_PRESETS: ServicePreset[] = [
   { name: 'Framer', iconKey: 'Framer', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'design' },
   { name: 'Obsidian Sync', iconKey: 'Obsidian', defaultAmount: 8, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'productivity' },
   { name: 'Zotero', iconKey: 'Zotero', defaultAmount: 120, defaultCurrency: 'USD', defaultCycle: 'yearly', category: 'productivity' },
+  {
+    name: 'Overleaf', iconKey: 'Overleaf', defaultAmount: 21, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'productivity',
+    tiers: [
+      { name: 'Standard', amount: 21, currency: 'USD', cycle: 'monthly' },
+      { name: 'Pro', amount: 42, currency: 'USD', cycle: 'monthly' },
+      { name: 'Student', amount: 10, currency: 'USD', cycle: 'monthly' },
+    ],
+  },
   { name: 'Adobe', iconKey: 'Adobe', defaultAmount: 22.99, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'design' },
 
   // Model Providers

@@ -9,6 +9,18 @@
     "subscriptions": "subs",
     "prepaid": "top-up"
   },
+  "category": {
+    "ai": "AI",
+    "dev": "Dev",
+    "cloud": "Cloud",
+    "domain": "Domain",
+    "productivity": "Tool",
+    "design": "Design",
+    "entertainment": "Media",
+    "storage": "Storage",
+    "communication": "Comm",
+    "other": "Other"
+  },
   "list": {
     "sortManual": "Custom",
     "sortByDate": "By date",
@@ -111,7 +123,7 @@
     "trayDisplay": "Menu bar",
     "trayMonthly": "Monthly",
     "trayDaily": "Daily",
-    "dataSection": "Data",
+    "dataSection": "Data migration",
     "exportData": "Export data",
     "importData": "Import data",
     "export": "Export",

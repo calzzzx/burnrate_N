@@ -130,28 +130,50 @@ export default function Settings({ settings, onUpdate, onBack, onClearData, onDa
         </div>
 
         <label className="text-[11px] text-text-quaternary mb-1.5 block font-medium tracking-wider uppercase">{t('settings.dataSection')}</label>
-        <div className="mac-field overflow-hidden">
-          <FormRow label={t('settings.exportData')}>
-            <button
-              onClick={handleExport}
-              className="text-[12px] px-2 py-0.5 rounded-[5px] cursor-default text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transition-colors"
-            >
-              {exportStatus === 'success' ? '✓' : exportStatus === 'error' ? t('settings.exportError') : t('settings.export')}
-            </button>
-          </FormRow>
-          <FormRow label={t('settings.importData')} last>
-            <button
-              onClick={handleImport}
-              className="text-[12px] px-2 py-0.5 rounded-[5px] cursor-default text-text-secondary hover:text-text-primary hover:bg-white/[0.06] transition-colors"
-            >
-              {importStatus === 'success' ? '✓' : importStatus === 'error' ? t('settings.importError') : t('settings.import')}
-            </button>
-          </FormRow>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleExport}
+            className="mac-button mac-button-secondary text-[12px] py-[7px] cursor-default flex items-center justify-center gap-1.5 transition-colors"
+          >
+            {exportStatus === 'success' ? (
+              <span className="text-accent">✓</span>
+            ) : exportStatus === 'error' ? (
+              <span className="text-red-400">{t('settings.exportError')}</span>
+            ) : (
+              <>
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M8 2v7" />
+                  <path d="M5 6.5l3 3 3-3" />
+                  <path d="M3 13h10" />
+                </svg>
+                {t('settings.export')}
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleImport}
+            className="mac-button mac-button-secondary text-[12px] py-[7px] cursor-default flex items-center justify-center gap-1.5 transition-colors"
+          >
+            {importStatus === 'success' ? (
+              <span className="text-accent">✓</span>
+            ) : importStatus === 'error' ? (
+              <span className="text-red-400">{t('settings.importError')}</span>
+            ) : (
+              <>
+                <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M8 9V2" />
+                  <path d="M5 4.5l3-3 3 3" />
+                  <path d="M3 13h10" />
+                </svg>
+                {t('settings.import')}
+              </>
+            )}
+          </button>
         </div>
 
-        <div className="mac-field overflow-hidden">
+        <div className="mac-field overflow-hidden border-red-500/20">
           <div className="flex items-center justify-between px-3 py-2.5">
-            <span className="text-[13px] text-text-primary">{t('settings.clearData')}</span>
+            <span className="text-[13px] text-red-400 font-medium">{t('settings.clearData')}</span>
             {showClearConfirm ? (
               <div className="flex items-center gap-1.5">
                 <button
@@ -170,7 +192,8 @@ export default function Settings({ settings, onUpdate, onBack, onClearData, onDa
             ) : (
               <button
                 onClick={() => setShowClearConfirm(true)}
-                className="text-text-tertiary hover:text-red-400 transition-colors cursor-default"
+                className="text-red-400 hover:text-red-300 transition-colors cursor-default"
+                aria-label={t('settings.clearData')}
               >
                 <svg width="17" height="17" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2.5 4h11" />
