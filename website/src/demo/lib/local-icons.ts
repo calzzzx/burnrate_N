@@ -1,0 +1,42 @@
+// Demo build: local brand logos are served from /public/demo-icons rather than
+// bundled as module imports (Next handles static assets differently from Vite).
+const BASE = '/demo-icons'
+
+/** Local icons keyed by the same iconKey used in presets */
+export const LOCAL_ICONS: Record<string, string> = {
+  Spotify: `${BASE}/spotify-icon.svg`,
+  Netflix: `${BASE}/netflix-icon.svg`,
+  YouTube: `${BASE}/youtube-icon.svg`,
+  AppleMusic: `${BASE}/Apple_Music_icon.svg`,
+  Disney: `${BASE}/Disney+_logo.svg`,
+  iCloud: `${BASE}/ICloud_logo.svg`,
+  Bilibili: `${BASE}/bilibili.svg`,
+  Zoom: `${BASE}/zoom-icon.svg`,
+  OnePassword: `${BASE}/1Password-icon.svg`,
+  Docker: `${BASE}/docker-icon.svg`,
+  Linear: `${BASE}/linear-icon.svg`,
+  Slack: `${BASE}/slack-icon.svg`,
+  Supabase: `${BASE}/supabase-icon.svg`,
+  Discord: `${BASE}/discord-icon.svg`,
+  DigitalOcean: `${BASE}/digital-ocean-icon.svg`,
+  Dropbox: `${BASE}/dropbox-logo.svg`,
+  Obsidian: `${BASE}/obsidian-icon.svg`,
+  BaiduNetdisk: `${BASE}/baidu-netdisk.svg`,
+  Qoder: `${BASE}/qoder-color.svg`,
+  Raycast: `${BASE}/Raycast_logo.svg`,
+  Thunder: `${BASE}/Thunder_logo.svg`,
+  NetEaseMusic: `${BASE}/NetEase_Music_icon.png`,
+  Framer: `${BASE}/framer.svg`,
+  Heroku: `${BASE}/heroku-icon.svg`,
+  iQIYI: `${BASE}/Logo.svg`,
+  Namecheap: `${BASE}/namecheap.svg`,
+  PlanetScale: `${BASE}/PlanetScale_logo.svg`,
+  Sentry: `${BASE}/sentry-logo.svg`,
+  Telegram: `${BASE}/telegram.svg`,
+  TencentMeeting: `${BASE}/tencent-meeting_logo.svg`,
+  TencentVideo: `${BASE}/Tencent_Video_logo.svg`,
+  Typeless: `${BASE}/typeless_logo.png`,
+  Zotero: `${BASE}/zotero_icon.png`,
+  WeChat: `${BASE}/WeChat-Icon.svg`,
+  Overleaf: `${BASE}/overleaf-logo.svg`,
+}
