@@ -60,7 +60,7 @@ export default function Download() {
           className="mt-10 flex flex-col items-center gap-4"
         >
           <a
-            href="https://github.com/BaoMutian/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
+            href="https://github.com/mtskyyy/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
             className="group inline-flex items-center gap-2.5 bg-accent hover:bg-accent/90 text-black px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base transition-all duration-200 shadow-[0_0_32px_rgba(232,168,56,0.25)] hover:shadow-[0_0_48px_rgba(232,168,56,0.35)]"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

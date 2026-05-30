@@ -18,7 +18,7 @@ export default function Footer() {
               <span className="text-white/50 font-medium">Tauri</span>
             </div>
             <a
-              href="https://github.com/BaoMutian/burnrate"
+              href="https://github.com/mtskyyy/burnrate"
               target="_blank"
               rel="noopener noreferrer"
               className="text-white/40 hover:text-white/70 transition-colors"

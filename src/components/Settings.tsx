@@ -224,7 +224,7 @@ export default function Settings({ settings, onUpdate, onBack, onClearData, onDa
             </button>
             <div className="w-px h-3 bg-white/[0.08]" />
             <button
-              onClick={() => open('https://github.com/BaoMutian/burnrate')}
+              onClick={() => open('https://github.com/mtskyyy/burnrate')}
               className="text-[11px] text-text-tertiary hover:text-text-primary transition-colors cursor-default"
             >
               GitHub

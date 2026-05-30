@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/BaoMutian/burnrate/releases/latest">Download</a> ·
+  <a href="https://github.com/mtskyyy/burnrate/releases/latest">Download</a> ·
   <a href="https://burnrate.run">Website</a> ·
   <a href="./README.zh-CN.md">中文</a>
 </p>
@@ -32,7 +32,7 @@ BurnRate is a lightweight macOS menu bar app that tracks your subscription spend
 
 ## Install
 
-Grab the latest `.dmg` from [**Releases**](https://github.com/BaoMutian/burnrate/releases/latest).
+Grab the latest `.dmg` from [**Releases**](https://github.com/mtskyyy/burnrate/releases/latest).
 
 Open the `.dmg` → drag BurnRate into Applications → launch. The flame icon appears in your menu bar.
 

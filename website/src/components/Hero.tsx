@@ -95,7 +95,7 @@ export default function Hero() {
         <motion.div variants={fadeUp} className="mt-10 flex flex-col items-center gap-4">
           <div className="flex items-center gap-3 flex-wrap justify-center">
             <a
-              href="https://github.com/BaoMutian/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
+              href="https://github.com/mtskyyy/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
               className="group inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-black px-8 py-3 rounded-full font-semibold text-base transition-all duration-200 shadow-[0_0_32px_rgba(232,168,56,0.25)] hover:shadow-[0_0_48px_rgba(232,168,56,0.35)]"
             >
               <AppleIcon />
@@ -103,7 +103,7 @@ export default function Hero() {
             </a>
             {/* GitHub Stars */}
             <a
-              href="https://github.com/BaoMutian/burnrate"
+              href="https://github.com/mtskyyy/burnrate"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white/80 transition-all duration-200 text-[13px]"
