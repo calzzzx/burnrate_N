@@ -338,6 +338,16 @@ export async function importData(): Promise<boolean> {
     throw new Error('Invalid backup file')
   }
 
+  // Validate every row up front so a malformed backup can't wipe existing data half-way.
+  const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
+  const validSub = (s: unknown) =>
+    isObj(s) && typeof s.id === 'string' && typeof s.name === 'string' && typeof s.amount === 'number'
+  const validTopup = (t: unknown) =>
+    isObj(t) && typeof t.id === 'string' && typeof t.subscription_id === 'string' && typeof t.amount === 'number'
+  if (!backup.subscriptions.every(validSub) || !backup.topups.every(validTopup)) {
+    throw new Error('Invalid backup file')
+  }
+
   const database = await getDb()
 
   // Clear existing data

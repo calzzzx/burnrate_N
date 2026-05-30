@@ -92,40 +92,78 @@ export function toDaily(monthlyTotal: number): number {
 }
 
 /**
- * How many times a recurring subscription has been charged from its start date
- * through today, counting the charge on the start date itself (start today = 1).
- * Returns 0 if the start date is in the future.
+ * Count billing charges from a start date, stepping by cycle. Month-based cycles clamp to
+ * each target month's length so a month-end date stays at month-end (no overflow into the
+ * next month). `inclusive` controls whether a charge landing exactly on the boundary counts.
  */
-export function chargeCount(startDate: string, cycle: BillingCycle, asOf: Date = new Date()): number {
-  const today = new Date(asOf)
-  today.setHours(0, 0, 0, 0)
-  const cursor = parseLocalDate(startDate)
-  if (cursor > today) return 0
+function countCharges(startDate: string, cycle: BillingCycle, boundary: Date, inclusive: boolean): number {
+  const start = parseLocalDate(startDate)
+  const within = (d: Date) => (inclusive ? d <= boundary : d < boundary)
+  if (!within(start)) return 0
 
+  if (cycle === 'weekly') {
+    const cursor = new Date(start)
+    let count = 0
+    while (within(cursor)) { count++; cursor.setDate(cursor.getDate() + 7) }
+    return count
+  }
+
+  const step = CYCLE_MONTHS[cycle]
+  const anchorDay = start.getDate()
+  let months = start.getFullYear() * 12 + start.getMonth()
   let count = 0
-  while (cursor <= today) {
+  for (;;) {
+    const y = Math.floor(months / 12)
+    const m = months % 12
+    const dim = new Date(y, m + 1, 0).getDate()
+    const d = new Date(y, m, Math.min(anchorDay, dim))
+    if (!within(d)) break
     count++
-    if (cycle === 'weekly') cursor.setDate(cursor.getDate() + 7)
-    else cursor.setMonth(cursor.getMonth() + CYCLE_MONTHS[cycle])
+    months += step
   }
   return count
 }
 
-/** Auto-computed cumulative spend: per-cycle amount × number of charges so far. */
+/**
+ * How many times a recurring subscription has been charged from its start date through
+ * today, counting the charge on the start date itself (start today = 1).
+ */
+export function chargeCount(startDate: string, cycle: BillingCycle, asOf: Date = new Date()): number {
+  const today = new Date(asOf)
+  today.setHours(0, 0, 0, 0)
+  return countCharges(startDate, cycle, today, true)
+}
+
+/** How many charges fall strictly before a boundary date (e.g. the next billing date). */
+export function chargesBeforeDate(startDate: string, cycle: BillingCycle, beforeDate: string): number {
+  return countCharges(startDate, cycle, parseLocalDate(beforeDate), false)
+}
+
+/** Auto-computed cumulative spend through today: per-cycle amount × charges so far. */
 export function computeTotalSpent(amount: number, cycle: BillingCycle, startDate: string, asOf?: Date): number {
   return amount * chargeCount(startDate, cycle, asOf)
 }
 
 /**
+ * Cumulative spend already billed: per-cycle amount × charges strictly before the next
+ * billing date. Using "before next billing" keeps this in lockstep with the per-cycle
+ * increment applied when the billing date advances, so nothing is counted twice.
+ */
+export function billedTotal(amount: number, cycle: BillingCycle, startDate: string, nextBilling: string): number {
+  return amount * chargesBeforeDate(startDate, cycle, nextBilling)
+}
+
+/**
  * A subscription's cumulative spend. Once materialized (total_spent_override set) it is a
  * stored running total — it does NOT recompute from the current amount, it only grows by
- * one charge per billing cycle (handled where billing dates advance). Until materialized
- * it falls back to the auto-computed value.
+ * one charge per billing cycle (handled where billing dates advance). Until materialized it
+ * falls back to the amount billed so far (charges strictly before the next billing date),
+ * which advances automatically as the billing date rolls forward.
  */
-export function subscriptionTotalSpent(sub: Subscription, asOf?: Date): number {
+export function subscriptionTotalSpent(sub: Subscription): number {
   if (sub.total_spent_override != null) return sub.total_spent_override
   const start = sub.start_date || sub.created_at.slice(0, 10)
-  return computeTotalSpent(sub.amount, sub.cycle, start, asOf)
+  return billedTotal(sub.amount, sub.cycle, start, sub.next_billing)
 }
 
 /**

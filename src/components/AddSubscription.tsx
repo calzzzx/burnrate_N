@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Subscription, BillingCycle, BillingType, ServicePreset, Topup } from '../types'
-import { formatAmount, computeTotalSpent } from '../lib/format'
+import { formatAmount, billedTotal } from '../lib/format'
 import { getFavoritePresets, toggleFavoritePreset, getTopups, addTopup, deleteTopup } from '../lib/db'
 import { SERVICE_PRESETS } from '../lib/presets'
 import FuzzySearch from './FuzzySearch'
@@ -97,7 +97,7 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, o
   // default), edited directly, and never re-linked to the amount field.
   const [spentInput, setSpentInput] = useState(
     editing
-      ? String(editing.total_spent_override ?? Math.round(computeTotalSpent(editing.amount, editing.cycle, editing.start_date || todayStr()) * 100) / 100)
+      ? String(editing.total_spent_override ?? Math.round(billedTotal(editing.amount, editing.cycle, editing.start_date || todayStr(), editing.next_billing) * 100) / 100)
       : ''
   )
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -285,12 +285,12 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, o
       notes: notes.trim() || null,
       auto_renew: billingType === 'prepaid' ? 0 : (autoRenew ? 1 : 0),
       start_date: billingType === 'prepaid' ? todayStr() : startDate,
-      // Store the cumulative as an absolute value (the auto default if untouched); it then
-      // grows one charge per cycle and is no longer tied to the amount field
+      // Store the cumulative as an absolute value (the billed-so-far default if untouched);
+      // it then grows one charge per cycle and is no longer tied to the amount field
       total_spent_override: billingType === 'prepaid'
         ? null
         : (spentInput === ''
-            ? Math.round(computeTotalSpent(parseFloat(amount) || 0, cycle, startDate) * 100) / 100
+            ? Math.round(billedTotal(parseFloat(amount) || 0, cycle, startDate, nextBilling) * 100) / 100
             : (parseFloat(spentInput) || 0)),
     }, initialTopup)
   }
@@ -694,7 +694,14 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, o
                   </button>
                 </FormRow>
                 <FormRow label={autoRenew ? t('form.nextBilling') : t('form.expiryDate')}>
-                  <DatePicker value={nextBilling} onChange={setNextBilling} />
+                  <DatePicker
+                    value={nextBilling}
+                    onChange={(v) => {
+                      setNextBilling(v)
+                      const amt = parseFloat(amount) || 0
+                      setSpentInput(amt > 0 ? String(Math.round(billedTotal(amt, cycle, startDate, v) * 100) / 100) : '')
+                    }}
+                  />
                 </FormRow>
                 <FormRow label={t('form.startDate')}>
                   <DatePicker
@@ -702,7 +709,7 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, o
                     onChange={(v) => {
                       setStartDate(v)
                       const amt = parseFloat(amount) || 0
-                      setSpentInput(amt > 0 ? String(Math.round(computeTotalSpent(amt, cycle, v) * 100) / 100) : '')
+                      setSpentInput(amt > 0 ? String(Math.round(billedTotal(amt, cycle, v, nextBilling) * 100) / 100) : '')
                     }}
                   />
                 </FormRow>

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import type { Subscription } from '../types'
 import {
@@ -14,11 +15,12 @@ import { toMonthly, toDaily, formatAmount, advanceBilling, isExpired, subscripti
 import { type ExchangeRates, convertAmount } from '../lib/currency'
 
 export function useSubscriptions(displayCurrency: string, exchangeRates: ExchangeRates | null, trayDisplay: 'monthly' | 'daily') {
+  const { i18n } = useTranslation()
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
   const [topupTotals, setTopupTotals] = useState<Map<string, number>>(new Map())
   const [loading, setLoading] = useState(true)
 
-  const load = useCallback(async () => {
+  const runLoad = useCallback(async () => {
     try {
       const [subs, totals] = await Promise.all([
         getAllSubscriptions(),
@@ -47,6 +49,15 @@ export function useSubscriptions(displayCurrency: string, exchangeRates: Exchang
       setLoading(false)
     }
   }, [])
+
+  // Serialize loads so overlapping reloads never read a stale billing date and
+  // double-apply the cumulative increment.
+  const loadChain = useRef<Promise<void>>(Promise.resolve())
+  const load = useCallback(() => {
+    const next = loadChain.current.then(runLoad, runLoad)
+    loadChain.current = next
+    return next
+  }, [runLoad])
 
   useEffect(() => { load() }, [load])
 
@@ -89,15 +100,11 @@ export function useSubscriptions(displayCurrency: string, exchangeRates: Exchang
   )
 
   // Cumulative spend ("已花费") covers all recurring subs, including archived ones — their
-  // historical spend still belongs in the lifetime total. Archived subs cap the
-  // auto-computation at their expiry date so it stops accruing after they expire.
+  // historical spend still belongs in the lifetime total. subscriptionTotalSpent counts
+  // charges before each sub's next billing date, so archived subs (whose date is their
+  // expiry) naturally stop accruing without any special-casing.
   const cumulativeTotal = useMemo(() =>
-    recurringAll.reduce((sum, sub) => {
-      const asOf = isExpired(sub.auto_renew, sub.next_billing)
-        ? new Date(sub.next_billing + 'T00:00:00')
-        : undefined
-      return sum + toDisplay(subscriptionTotalSpent(sub, asOf), sub.currency)
-    }, 0),
+    recurringAll.reduce((sum, sub) => sum + toDisplay(subscriptionTotalSpent(sub), sub.currency), 0),
     [recurringAll, toDisplay]
   )
 
@@ -122,7 +129,7 @@ export function useSubscriptions(displayCurrency: string, exchangeRates: Exchang
     const suffix = trayDisplay === 'daily' ? '/d' : '/m'
     const title = `${formatAmount(value, displayCurrency)}${suffix}`
     invoke('update_tray_title', { title }).catch(() => {})
-  }, [monthlyTotal, dailyAverage, displayCurrency, trayDisplay])
+  }, [monthlyTotal, dailyAverage, displayCurrency, trayDisplay, i18n.language])
 
   const addSubscription = useCallback(async (sub: Parameters<typeof dbAdd>[0], initialTopup?: number) => {
     const id = await dbAdd(sub)

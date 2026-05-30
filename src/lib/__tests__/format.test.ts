@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import i18n from '../../i18n'
-import { toMonthly, toYearly, formatAmount, relativeDate, advanceBillingDate, advanceBilling, getCurrencyParts, chargeCount, computeTotalSpent, subscriptionTotalSpent } from '../format'
+import { toMonthly, toYearly, formatAmount, relativeDate, advanceBillingDate, advanceBilling, getCurrencyParts, chargeCount, chargesBeforeDate, computeTotalSpent, subscriptionTotalSpent } from '../format'
 import type { Subscription } from '../../types'
 
 const makeSub = (o: Partial<Subscription>): Subscription => ({
@@ -174,6 +174,27 @@ describe('chargeCount', () => {
   it('returns 0 for a future start date', () => {
     expect(chargeCount('2026-04-01', 'monthly')).toBe(0)
   })
+
+  it('clamps month-end dates instead of overflowing', () => {
+    // Jan 31 → Feb 28 → (Mar 31 is after today) → 2 charges by 2026-03-23
+    expect(chargeCount('2026-01-31', 'monthly')).toBe(2)
+  })
+})
+
+describe('chargesBeforeDate', () => {
+  it('counts charges strictly before the boundary', () => {
+    // charges 1/23, 2/23 fall before 3/23; the 3/23 charge does not count
+    expect(chargesBeforeDate('2026-01-23', 'monthly', '2026-03-23')).toBe(2)
+  })
+
+  it('returns 0 when the boundary is the start date', () => {
+    expect(chargesBeforeDate('2026-03-23', 'monthly', '2026-03-23')).toBe(0)
+  })
+
+  it('clamps month-end dates', () => {
+    // 1/31, 2/28 before 3/31; the 3/31 charge is excluded
+    expect(chargesBeforeDate('2026-01-31', 'monthly', '2026-03-31')).toBe(2)
+  })
 })
 
 describe('computeTotalSpent', () => {
@@ -204,9 +225,14 @@ describe('subscriptionTotalSpent', () => {
     vi.useRealTimers()
   })
 
-  it('auto-computes when not yet materialized', () => {
-    // monthly 20, start 2026-01-23 → 3 charges = 60
-    expect(subscriptionTotalSpent(makeSub({}))).toBe(60)
+  it('auto-computes from charges before the next billing date when not materialized', () => {
+    // monthly 20, start 2026-01-23, next billing 2026-03-23 → charges 1/23, 2/23 (before 3/23) = 40
+    expect(subscriptionTotalSpent(makeSub({}))).toBe(40)
+  })
+
+  it('does not double-count the charge on the next billing date', () => {
+    // next_billing == start == today: nothing billed yet, so 0 (the increment will add it later)
+    expect(subscriptionTotalSpent(makeSub({ start_date: '2026-03-23', next_billing: '2026-03-23' }))).toBe(0)
   })
 
   it('returns the stored value once materialized, ignoring the amount', () => {
