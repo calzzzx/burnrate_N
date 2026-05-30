@@ -18,7 +18,7 @@ const dict = {
       unsignedNote: 'Apple charges $99/yr to be a registered developer — more than this free project can cover, so the app isn\'t notarized. Before opening BurnRate the first time, paste this in Terminal to skip the verification:',
       unsignedCmd: 'xattr -dr com.apple.quarantine /Applications/BurnRate.app',
       copy: 'Copy',
-      copied: 'Copied!',
+      copied: 'Copied',
     },
     features: {
       heading: 'Master your digital cash flow.',
@@ -70,11 +70,11 @@ const dict = {
       subtitle: '从 ChatGPT 到影音会员，数字化生活充满了隐形账单。\nBurnRate 为您实时监控订阅支出，让每一分钱的流向都清晰明了。',
       cta: '免费下载 macOS 版',
       badge: '开源免费 · 无需注册 · 本地存储',
-      unsignedTitle: '提示：可能提示"无法验证开发者"',
-      unsignedNote: '注册 Apple 开发者每年要交 99 美元,这个免费小项目实在负担不起,所以应用没有做公证。首次打开 BurnRate 前,把下面这行命令粘贴到「终端」执行一下即可跳过验证：',
+      unsignedTitle: '提示：可能提示「无法验证开发者」',
+      unsignedNote: '注册 Apple 开发者每年要交 99 美元，这个免费小项目实在负担不起，所以应用没有做公证。首次打开 BurnRate 前，把下面这行命令粘贴到「终端」执行一下即可跳过验证：',
       unsignedCmd: 'xattr -dr com.apple.quarantine /Applications/BurnRate.app',
       copy: '复制',
-      copied: '已复制!',
+      copied: '已复制',
     },
     features: {
       heading: '掌控每一分数字现金流，',
