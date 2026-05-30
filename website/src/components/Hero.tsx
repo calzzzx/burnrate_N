@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
 import { DOWNLOAD_URL, GITHUB_URL } from '@/lib/config'
 import AppMockup from './AppMockup'
+import GatekeeperNote from './GatekeeperNote'
 
 // The interactive panel uses portals/window, so it must be client-only. Until it
 // mounts (and while its chunk loads) we show the static AppMockup — so SSR, the
@@ -153,6 +154,7 @@ export default function Hero() {
             </a>
           </div>
           <span className="text-[13px] text-white/25">{t.hero.badge}</span>
+          <GatekeeperNote />
         </motion.div>
       </motion.div>
 

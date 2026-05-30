@@ -43,9 +43,8 @@ export default function InteractiveDemo() {
       <Panel />
 
       <p className="mt-5 text-[12px] text-white/30 text-center max-w-[18rem] leading-relaxed">
-        {locale === 'en'
-          ? 'Live demo — click around, add a service, switch views. Nothing is saved.'
-          : '可交互演示 — 随意点击、添加订阅、切换视图。所有数据不会被保存。'}
+        {locale === 'en' ? 'Live demo — click around, add a service, switch views.' : '可交互演示 — 随意点击、添加订阅、切换视图。'}
+        <span className="block">{locale === 'en' ? 'Nothing is saved.' : '所有数据不会被保存。'}</span>
       </p>
     </div>
   )
