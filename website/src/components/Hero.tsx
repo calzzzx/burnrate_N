@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
+import { DOWNLOAD_URL, GITHUB_URL } from '@/lib/config'
 import AppMockup from './AppMockup'
 
 const container = {
@@ -28,7 +29,7 @@ function MeshGradient() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let animId: number
+    let animId: number | null = null
     const resize = () => {
       canvas.width = canvas.offsetWidth * 0.5
       canvas.height = canvas.offsetHeight * 0.5
@@ -54,9 +55,24 @@ function MeshGradient() {
       }
       animId = requestAnimationFrame(draw)
     }
-    animId = requestAnimationFrame(draw)
+
+    // requestAnimationFrame keeps firing for on-page-but-offscreen elements,
+    // so only run the loop while the hero is actually visible.
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && animId === null) {
+        animId = requestAnimationFrame(draw)
+      } else if (!entry.isIntersecting && animId !== null) {
+        cancelAnimationFrame(animId)
+        animId = null
+      }
+    })
+    io.observe(canvas)
     window.addEventListener('resize', resize)
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize) }
+    return () => {
+      if (animId !== null) cancelAnimationFrame(animId)
+      io.disconnect()
+      window.removeEventListener('resize', resize)
+    }
   }, [])
 
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ filter: 'blur(60px)' }} />
@@ -95,7 +111,7 @@ export default function Hero() {
         <motion.div variants={fadeUp} className="mt-10 flex flex-col items-center gap-4">
           <div className="flex items-center gap-3 flex-wrap justify-center">
             <a
-              href="https://github.com/mtskyyy/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
+              href={DOWNLOAD_URL}
               className="group inline-flex items-center gap-2 bg-accent hover:bg-accent/90 text-black px-8 py-3 rounded-full font-semibold text-base transition-all duration-200 shadow-[0_0_32px_rgba(232,168,56,0.25)] hover:shadow-[0_0_48px_rgba(232,168,56,0.35)]"
             >
               <AppleIcon />
@@ -103,7 +119,7 @@ export default function Hero() {
             </a>
             {/* GitHub Stars */}
             <a
-              href="https://github.com/mtskyyy/burnrate"
+              href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] text-white/60 hover:text-white/80 transition-all duration-200 text-[13px]"

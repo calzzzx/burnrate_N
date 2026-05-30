@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+
+const STORAGE_KEY = 'burnrate-locale'
 
 export type Locale = 'en' | 'zh'
 
@@ -37,7 +39,7 @@ const dict = {
       title: 'See your money burn. Literally.',
       subtitle: 'The Burn Counter translates your monthly subscriptions into a per-second cost, visualized as a ticking odometer for your digital life.',
       label: 'burned today',
-      ofDaily: 'of $47.82/day',
+      ofDaily: 'of $328.57/day',
     },
     showcase: {
       title: 'Know exactly where every dollar goes.',
@@ -49,10 +51,10 @@ const dict = {
       subtitle: 'Lightweight, private, and forever free. Download the .dmg and start seeing your burn rate in seconds.',
       cta: 'Download for macOS',
       dmg: 'Download .dmg',
-      requirements: 'macOS 12.0+ · Universal Binary (Intel & Apple Silicon)',
+      requirements: 'macOS 12.0+ · Apple Silicon (M1 and later)',
     },
     footer: {
-      rights: '© 2025 BurnRate. Open Source on GitHub.',
+      rights: 'BurnRate. Open Source on GitHub.',
       github: 'GitHub',
     },
   },
@@ -100,10 +102,10 @@ const dict = {
       subtitle: '轻量、私密、永久免费。下载 APP，数秒内开启您的订阅追踪之旅。',
       cta: '下载 macOS 版',
       dmg: '下载 .dmg 安装镜像',
-      requirements: '支持 macOS 12.0 或更高版本',
+      requirements: '支持 macOS 12.0 或更高版本 · Apple 芯片 (M1 及更新机型)',
     },
     footer: {
-      rights: '© 2025 BurnRate. Made By Mutian',
+      rights: 'BurnRate. Made By Mutian',
       github: 'GitHub 仓库',
     },
   },
@@ -124,7 +126,33 @@ const I18nContext = createContext<I18nContextType>({
 })
 
 export function I18nProvider({ children }: { children: ReactNode }) {
+  // SSR renders the default ('zh'); a stored/detected preference is applied
+  // after mount to keep server and client markup identical on first paint.
   const [locale, setLocale] = useState<Locale>('zh')
+
+  useEffect(() => {
+    // Reading the saved/browser preference is only possible after mount, so a
+    // one-time state sync here is intentional (and avoids a hydration mismatch).
+    /* eslint-disable react-hooks/set-state-in-effect */
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored === 'en' || stored === 'zh') {
+      setLocale(stored)
+      return
+    }
+    // No saved choice: fall back to the browser's language.
+    if (!navigator.language?.toLowerCase().startsWith('zh')) setLocale('en')
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.lang = locale
+    try {
+      localStorage.setItem(STORAGE_KEY, locale)
+    } catch {
+      /* storage unavailable (private mode) — ignore */
+    }
+  }, [locale])
+
   const toggle = useCallback(() => setLocale(l => (l === 'en' ? 'zh' : 'en')), [])
 
   return (

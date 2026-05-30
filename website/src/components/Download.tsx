@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { useI18n } from '@/lib/i18n'
+import { DOWNLOAD_URL } from '@/lib/config'
 
 export default function Download() {
   const { t } = useI18n()
@@ -28,6 +29,9 @@ export default function Download() {
           <img
             src="/app-icon-512.png"
             alt="BurnRate"
+            width={112}
+            height={112}
+            loading="lazy"
             className="w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-[22px] sm:rounded-[28px] shadow-2xl shadow-black/40"
             draggable={false}
           />
@@ -60,7 +64,7 @@ export default function Download() {
           className="mt-10 flex flex-col items-center gap-4"
         >
           <a
-            href="https://github.com/mtskyyy/burnrate/releases/latest/download/BurnRate_0.1.0_aarch64.dmg"
+            href={DOWNLOAD_URL}
             className="group inline-flex items-center gap-2.5 bg-accent hover:bg-accent/90 text-black px-8 sm:px-10 py-3 sm:py-3.5 rounded-full font-semibold text-sm sm:text-base transition-all duration-200 shadow-[0_0_32px_rgba(232,168,56,0.25)] hover:shadow-[0_0_48px_rgba(232,168,56,0.35)]"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

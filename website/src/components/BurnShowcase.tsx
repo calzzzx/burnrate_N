@@ -27,6 +27,7 @@ export default function BurnShowcase() {
   const [isSmall, setIsSmall] = useState(false)
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)')
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- viewport size is only knowable after mount
     setIsSmall(mq.matches)
     const handler = (e: MediaQueryListEvent) => setIsSmall(e.matches)
     mq.addEventListener('change', handler)
@@ -35,7 +36,9 @@ export default function BurnShowcase() {
   const DH = isSmall ? DIGIT_HEIGHT_SM : DIGIT_HEIGHT_LG
 
   const dhRef = useRef(DH)
-  dhRef.current = DH
+  useEffect(() => {
+    dhRef.current = DH
+  }, [DH])
 
   const col1Ref = useRef<HTMLDivElement>(null)
   const col2Ref = useRef<HTMLDivElement>(null)

@@ -36,6 +36,7 @@ export default function Nav() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggle}
+            aria-label={locale === 'en' ? 'Switch to Chinese' : '切换到英文'}
             className="text-[13px] text-white/40 hover:text-white/80 transition-colors px-2 py-1"
           >
             {locale === 'en' ? '中文' : 'EN'}

@@ -50,7 +50,7 @@ export default function AppMockup() {
             <span className="text-white/25">/{locale === 'en' ? 'day' : '日'}</span>
             <span className="text-white/15 mx-1">·</span>
             <span className="text-white/55" style={{ fontVariantNumeric: 'tabular-nums' }}>¥14,976</span>
-            <span className="text-white/25 ml-0.5">{locale === 'en' ? 'total' : '累计'}</span>
+            <span className="text-white/25 ml-0.5">{locale === 'en' ? 'spent' : '已花费'}</span>
             <span className="text-white/15 mx-1">·</span>
             <span className="text-white/55" style={{ fontVariantNumeric: 'tabular-nums' }}>12</span>
             <span className="text-white/25 ml-0.5">{locale === 'en' ? 'subs' : '订阅'}</span>

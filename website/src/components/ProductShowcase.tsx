@@ -35,7 +35,7 @@ function SubRow({ sub, compact, interactive }: { sub: SubItem; compact?: boolean
     <div className={`flex items-center justify-between px-3 py-[8px] border-b border-white/[0.04] last:border-b-0 transition-colors duration-150 ${interactive ? 'cursor-default hover:bg-white/[0.04]' : ''}`}>
       <div className="flex items-center gap-2.5">
         <div className="w-[26px] h-[26px] rounded-[8px] bg-white/[0.04] flex items-center justify-center overflow-hidden shrink-0">
-          <img src={sub.icon} alt="" className="w-[18px] h-[18px] object-contain" />
+          <img src={sub.icon} alt="" loading="lazy" className="w-[18px] h-[18px] object-contain" />
         </div>
         <div>
           <div className="flex items-center gap-1.5">
@@ -77,7 +77,7 @@ function OverviewMockup({ locale }: { locale: string }) {
           <span className="text-white/20">/{locale === 'en' ? 'day' : '日'}</span>
           <span className="text-white/10 mx-1">·</span>
           <span className="text-white/50" style={{ fontVariantNumeric: 'tabular-nums' }}>¥14,976</span>
-          <span className="text-white/20 ml-0.5">{locale === 'en' ? 'total' : '累计'}</span>
+          <span className="text-white/20 ml-0.5">{locale === 'en' ? 'spent' : '已花费'}</span>
         </div>
       </div>
       <div className="px-3 pt-0.5 pb-1.5">
@@ -120,9 +120,7 @@ function RollingDigit({ colRef }: { colRef: React.RefObject<HTMLDivElement | nul
   )
 }
 
-function BurnMockup({ locale }: { locale: string }) {
-  const r = 18
-  const circumference = 2 * Math.PI * r
+function BurnMockup({ locale, active }: { locale: string; active: boolean }) {
   const col1Ref = useRef<HTMLDivElement>(null)
   const col2Ref = useRef<HTMLDivElement>(null)
   const startedRef = useRef(false)
@@ -130,7 +128,7 @@ function BurnMockup({ locale }: { locale: string }) {
   const pct = 49.1
 
   useEffect(() => {
-    if (startedRef.current) return
+    if (!active || startedRef.current) return
     startedRef.current = true
     let rafId: number
     const start = performance.now()
@@ -147,7 +145,7 @@ function BurnMockup({ locale }: { locale: string }) {
     }
     rafId = requestAnimationFrame(update)
     return () => cancelAnimationFrame(rafId)
-  }, [])
+  }, [active])
 
   return (
     <div className="w-full rounded-[14px] bg-[rgba(18,18,20,0.92)] border border-white/[0.08] shadow-2xl shadow-black/50 overflow-hidden flex flex-col h-full">
@@ -221,7 +219,7 @@ function AddServiceMockup({ locale }: { locale: string }) {
           <div key={p.name} className="flex items-center justify-between px-3 py-[8px] border-b border-white/[0.03] last:border-b-0 hover:bg-white/[0.04] cursor-default transition-colors duration-150">
             <div className="flex items-center gap-2.5">
               <div className="w-[26px] h-[26px] rounded-[8px] bg-white/[0.04] flex items-center justify-center overflow-hidden">
-                <img src={p.icon} alt="" className="w-[18px] h-[18px] object-contain" />
+                <img src={p.icon} alt="" loading="lazy" className="w-[18px] h-[18px] object-contain" />
               </div>
               <span className="text-[12px] text-white/75">{p.name}</span>
             </div>
@@ -240,7 +238,7 @@ export default function ProductShowcase() {
 
   const cards = [
     { label: locale === 'en' ? 'Overview' : '一览无遗', desc: locale === 'en' ? 'Monthly cost, daily average, category breakdown' : '月度费用、日均消耗、分类统计', mockup: <OverviewMockup locale={locale} /> },
-    { label: locale === 'en' ? 'Burn Counter' : '消耗计数', desc: locale === 'en' ? 'Real-time daily spending with progress ring' : '实时每日消耗，进度环可视化', mockup: <BurnMockup locale={locale} /> },
+    { label: locale === 'en' ? 'Burn Counter' : '消耗计数', desc: locale === 'en' ? 'Real-time daily spending with progress ring' : '实时每日消耗，进度环可视化', mockup: <BurnMockup locale={locale} active={inView} /> },
     { label: locale === 'en' ? 'Quick Add' : '快速添加', desc: locale === 'en' ? '80+ presets with fuzzy search' : '80+ 预设服务，也能自定义添加', mockup: <AddServiceMockup locale={locale} /> },
   ]
 
