@@ -71,7 +71,7 @@ const dict = {
       cta: '免费下载 macOS 版',
       badge: '开源免费 · 无需注册 · 本地存储',
       unsignedTitle: '注意：macOS 可能提示「应用程序已损坏」或「未受信任」',
-      unsignedNote: '注册 Apple 开发者每年要交 99 美元，这个免费小项目实在负担不起，所以应用没有做公证，macOS 多半会拒绝打开，甚至提示「已损坏」（其实并没有）。\n首次打开 BurnRate 前，把下面这行命令粘贴到「终端」执行一下即可正常打开。',
+      unsignedNote: '注册 Apple 开发者每年要交 99 美元，这个免费小项目实在负担不起，所以应用没有做公证。\n首次打开 BurnRate 前，把下面这行命令粘贴到「终端」执行一下即可正常打开。',
       unsignedCmd: 'xattr -dr com.apple.quarantine /Applications/BurnRate.app',
       copy: '复制',
       copied: '已复制',
