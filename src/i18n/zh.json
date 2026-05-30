@@ -4,13 +4,13 @@
   },
   "overview": {
     "monthly": "月",
-    "cumulative": "累计",
+    "cumulative": "已花费",
     "daily": "/日",
-    "subscriptions": "项订阅",
-    "prepaid": "项充值"
+    "subscriptions": "订阅",
+    "prepaid": "充值"
   },
   "list": {
-    "sortManual": "手动",
+    "sortManual": "自定义",
     "sortByDate": "按日期",
     "sortByAmount": "按金额",
     "empty": "还没有订阅",
@@ -38,6 +38,7 @@
   "form": {
     "add": "添加订阅",
     "edit": "编辑订阅",
+    "editPrepaid": "编辑充值",
     "name": "服务名称",
     "amount": "金额",
     "currency": "币种",
@@ -45,6 +46,8 @@
     "autoRenew": "自动续费",
     "nextBilling": "下次扣费日",
     "expiryDate": "到期时间",
+    "startDate": "开始日期",
+    "totalSpent": "累计扣费",
     "paymentChannel": "支付方式",
     "paymentNone": "未设置",
     "cardLast4": "后四位",
@@ -75,7 +78,8 @@
     "topupYearlyShort": "年度",
     "topupEmpty": "暂无充值记录",
     "viewHistory": "查看",
-    "emojiIconTitle": "点击设置 Emoji 图标"
+    "emojiIconTitle": "点击设置 Emoji 图标",
+    "restoreDefaultIcon": "恢复默认图标"
   },
   "cycle": {
     "weekly": "周付",

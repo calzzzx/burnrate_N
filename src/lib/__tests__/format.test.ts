@@ -1,6 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import i18n from '../../i18n'
-import { toMonthly, toYearly, formatAmount, relativeDate, advanceBillingDate, getCurrencyParts } from '../format'
+import { toMonthly, toYearly, formatAmount, relativeDate, advanceBillingDate, advanceBilling, getCurrencyParts, chargeCount, computeTotalSpent, subscriptionTotalSpent } from '../format'
+import type { Subscription } from '../../types'
+
+const makeSub = (o: Partial<Subscription>): Subscription => ({
+  id: 'x', name: 'X', icon_key: null, sort_order: 1, amount: 20, currency: 'USD',
+  cycle: 'monthly', billing_type: 'recurring', tier: null, next_billing: '2026-03-23',
+  payment_channel: null, account: null, password: null, notes: null,
+  is_pinned: 0, auto_renew: 1, start_date: '2026-01-23', total_spent_override: null,
+  created_at: '2026-01-23', updated_at: '2026-01-23', ...o,
+})
 
 const t = (key: string, opts?: Record<string, unknown>) => {
   if (opts?.count !== undefined) return `${key}:${opts.count}`
@@ -135,6 +144,78 @@ describe('relativeDate', () => {
   })
 })
 
+describe('chargeCount', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-23T12:00:00'))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('counts the start-date charge (start today = 1)', () => {
+    expect(chargeCount('2026-03-23', 'monthly')).toBe(1)
+  })
+
+  it('counts monthly charges through today', () => {
+    expect(chargeCount('2026-01-23', 'monthly')).toBe(3)
+    expect(chargeCount('2026-01-01', 'monthly')).toBe(3)
+  })
+
+  it('counts yearly charges through today', () => {
+    expect(chargeCount('2024-03-23', 'yearly')).toBe(3)
+    expect(chargeCount('2026-03-23', 'yearly')).toBe(1)
+  })
+
+  it('counts weekly charges through today', () => {
+    expect(chargeCount('2026-03-09', 'weekly')).toBe(3)
+  })
+
+  it('returns 0 for a future start date', () => {
+    expect(chargeCount('2026-04-01', 'monthly')).toBe(0)
+  })
+})
+
+describe('computeTotalSpent', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-23T12:00:00'))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('multiplies per-cycle amount by charge count', () => {
+    expect(computeTotalSpent(20, 'monthly', '2026-01-23')).toBe(60)
+    expect(computeTotalSpent(99, 'yearly', '2024-03-23')).toBe(297)
+  })
+
+  it('is zero before the first charge', () => {
+    expect(computeTotalSpent(20, 'monthly', '2026-04-01')).toBe(0)
+  })
+})
+
+describe('subscriptionTotalSpent', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-23T12:00:00'))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('auto-computes when not yet materialized', () => {
+    // monthly 20, start 2026-01-23 → 3 charges = 60
+    expect(subscriptionTotalSpent(makeSub({}))).toBe(60)
+  })
+
+  it('returns the stored value once materialized, ignoring the amount', () => {
+    expect(subscriptionTotalSpent(makeSub({ total_spent_override: 500 }))).toBe(500)
+    // changing the amount must not affect the stored cumulative
+    expect(subscriptionTotalSpent(makeSub({ amount: 999, total_spent_override: 500 }))).toBe(500)
+  })
+})
+
 describe('getCurrencyParts', () => {
   it('returns correct parts for USD', () => {
     const parts = getCurrencyParts('USD')
@@ -197,5 +278,39 @@ describe('advanceBillingDate', () => {
 
   it('handles dates far in the past', () => {
     expect(advanceBillingDate('2020-01-01', 'yearly')).toBe('2027-01-01')
+  })
+
+  it('keeps month-end dates at month-end instead of overflowing', () => {
+    // Jan 31 would overflow to Mar 3 with naive setMonth; clamps through Feb to Mar 31
+    expect(advanceBillingDate('2026-01-31', 'monthly', '2026-01-31')).toBe('2026-03-31')
+  })
+
+  it('snaps back to the anchor day in longer months', () => {
+    // Stored date already clamped to Feb 28, but the start-date anchor (31) restores Mar 31
+    expect(advanceBillingDate('2026-02-28', 'monthly', '2024-08-31')).toBe('2026-03-31')
+  })
+
+  it('clamps the anchor day to a shorter target month', () => {
+    // Day 30 anchor: Feb clamps to 28, then restores 30 in March
+    expect(advanceBillingDate('2026-01-30', 'monthly', '2026-01-30')).toBe('2026-03-30')
+  })
+})
+
+describe('advanceBilling (cycle count)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-23T12:00:00'))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('reports how many cycles elapsed', () => {
+    // Jan 23 → Feb 23 → Mar 23: two charges elapsed, next due 2026-03-23
+    expect(advanceBilling('2026-01-23', 'monthly', '2026-01-23')).toEqual({ date: '2026-03-23', cycles: 2 })
+  })
+
+  it('reports zero cycles for a future date', () => {
+    expect(advanceBilling('2026-04-01', 'monthly', '2026-04-01')).toEqual({ date: '2026-04-01', cycles: 0 })
   })
 })

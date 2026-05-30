@@ -4,13 +4,13 @@
   },
   "overview": {
     "monthly": "mo",
-    "cumulative": "total",
+    "cumulative": "spent",
     "daily": "/day",
     "subscriptions": "subs",
     "prepaid": "top-up"
   },
   "list": {
-    "sortManual": "Manual",
+    "sortManual": "Custom",
     "sortByDate": "By date",
     "sortByAmount": "By amount",
     "empty": "No subscriptions yet",
@@ -38,6 +38,7 @@
   "form": {
     "add": "Add Subscription",
     "edit": "Edit Subscription",
+    "editPrepaid": "Edit Top-up",
     "name": "Service name",
     "amount": "Amount",
     "currency": "Currency",
@@ -45,6 +46,8 @@
     "autoRenew": "Auto-renew",
     "nextBilling": "Next billing",
     "expiryDate": "Expiry date",
+    "startDate": "Start date",
+    "totalSpent": "Total spent",
     "paymentChannel": "Payment method",
     "paymentNone": "None",
     "cardLast4": "Last 4",
@@ -75,7 +78,8 @@
     "topupYearlyShort": "This year",
     "topupEmpty": "No top-up records yet",
     "viewHistory": "View",
-    "emojiIconTitle": "Click to set emoji icon"
+    "emojiIconTitle": "Click to set emoji icon",
+    "restoreDefaultIcon": "Restore default icon"
   },
   "cycle": {
     "weekly": "Wk",

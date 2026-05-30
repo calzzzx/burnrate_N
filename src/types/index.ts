@@ -18,6 +18,8 @@ export interface Subscription {
   notes: string | null
   is_pinned: number // 0 | 1
   auto_renew: number // 0 | 1
+  start_date: string // YYYY-MM-DD — when the subscription actually began
+  total_spent_override: number | null // stored cumulative spend; grows one charge per cycle, user-editable; null = not yet materialized (falls back to auto-computed)
   created_at: string
   updated_at: string
 }

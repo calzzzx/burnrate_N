@@ -59,6 +59,11 @@ async function runMigrations(database: Database) {
   await database.execute(`ALTER TABLE subscriptions ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0`).catch(() => {})
   await database.execute(`ALTER TABLE subscriptions ADD COLUMN auto_renew INTEGER NOT NULL DEFAULT 1`).catch(() => {})
   await database.execute(`ALTER TABLE subscriptions ADD COLUMN billing_type TEXT NOT NULL DEFAULT 'recurring'`).catch(() => {})
+  await database.execute(`ALTER TABLE subscriptions ADD COLUMN start_date TEXT`).catch(() => {})
+  await database.execute(`ALTER TABLE subscriptions ADD COLUMN total_spent_override REAL`).catch(() => {})
+
+  // Backfill start_date for rows that predate the column with the day they were added
+  await database.execute(`UPDATE subscriptions SET start_date = date(created_at) WHERE start_date IS NULL`).catch(() => {})
 
 
   await database.execute(`
@@ -128,9 +133,9 @@ export async function addSubscription(sub: Omit<Subscription, 'id' | 'sort_order
   const database = await getDb()
   const id = (crypto.randomUUID?.() ?? Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('')).replace(/-/g, '')
   await database.execute(
-    `INSERT INTO subscriptions (id, name, icon_key, sort_order, amount, currency, cycle, tier, next_billing, payment_channel, account, password, notes, auto_renew, billing_type)
-     VALUES ($1, $2, $3, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM subscriptions), $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
-    [id, sub.name, sub.icon_key, sub.amount, sub.currency, sub.cycle, sub.tier, sub.next_billing, sub.payment_channel, sub.account, sub.password, sub.notes, sub.auto_renew, sub.billing_type]
+    `INSERT INTO subscriptions (id, name, icon_key, sort_order, amount, currency, cycle, tier, next_billing, payment_channel, account, password, notes, auto_renew, billing_type, start_date, total_spent_override)
+     VALUES ($1, $2, $3, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM subscriptions), $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+    [id, sub.name, sub.icon_key, sub.amount, sub.currency, sub.cycle, sub.tier, sub.next_billing, sub.payment_channel, sub.account, sub.password, sub.notes, sub.auto_renew, sub.billing_type, sub.start_date, sub.total_spent_override]
   )
   return id
 }
@@ -344,9 +349,9 @@ export async function importData(): Promise<boolean> {
   // Restore subscriptions
   for (const sub of backup.subscriptions) {
     await database.execute(
-      `INSERT INTO subscriptions (id, name, icon_key, sort_order, amount, currency, cycle, tier, next_billing, payment_channel, account, password, notes, is_pinned, auto_renew, billing_type, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
-      [sub.id, sub.name, sub.icon_key, sub.sort_order, sub.amount, sub.currency, sub.cycle, sub.tier, sub.next_billing, sub.payment_channel, sub.account, sub.password, sub.notes, sub.is_pinned, sub.auto_renew, sub.billing_type, sub.created_at, sub.updated_at]
+      `INSERT INTO subscriptions (id, name, icon_key, sort_order, amount, currency, cycle, tier, next_billing, payment_channel, account, password, notes, is_pinned, auto_renew, billing_type, start_date, total_spent_override, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`,
+      [sub.id, sub.name, sub.icon_key, sub.sort_order, sub.amount, sub.currency, sub.cycle, sub.tier, sub.next_billing, sub.payment_channel, sub.account, sub.password, sub.notes, sub.is_pinned, sub.auto_renew, sub.billing_type, sub.start_date ?? ((sub.created_at ?? '').slice(0, 10) || null), sub.total_spent_override ?? null, sub.created_at, sub.updated_at]
     )
   }
 

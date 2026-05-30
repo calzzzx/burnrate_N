@@ -288,6 +288,7 @@ export default function Panel() {
               onSave={handleSave}
               onDelete={view === 'edit' ? handleDelete : undefined}
               onCancel={() => { setView('list'); setEditingSubscription(null) }}
+              onTopupsChanged={reload}
               saveError={saveError}
             />
           ) : view === 'topups' && editingSubscription ? (
@@ -299,6 +300,7 @@ export default function Panel() {
                 if (topupsOrigin === 'edit') { setView('edit') }
                 else { setView('list') }
               }}
+              onTopupsChanged={reload}
               saveError={saveError}
               initialStep="topups"
             />

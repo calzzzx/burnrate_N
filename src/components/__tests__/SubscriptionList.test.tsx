@@ -22,6 +22,8 @@ function makeSub(id: string, overrides: Partial<Subscription> = {}): Subscriptio
     is_pinned: 0,
     auto_renew: 1,
     billing_type: 'recurring',
+    start_date: '2026-01-01',
+    total_spent_override: null,
     created_at: '2026-01-01',
     updated_at: '2026-01-01',
     ...overrides,
@@ -137,11 +139,11 @@ describe('SubscriptionList', () => {
     expect(screen.getByText('By amount')).toBeInTheDocument()
   })
 
-  it('shows "Manual" when currently sorting manually', () => {
+  it('shows "Custom" when currently sorting manually', () => {
     render(
       <SubscriptionList subscriptions={[makeSub('1')]} sortBy="manual" {...defaultProps} />
     )
-    expect(screen.getByText('Manual')).toBeInTheDocument()
+    expect(screen.getByText('Custom')).toBeInTheDocument()
   })
 
   it('calls onEdit when a row is clicked', () => {

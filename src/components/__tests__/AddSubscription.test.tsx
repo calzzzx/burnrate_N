@@ -27,6 +27,8 @@ const mockEditing: Subscription = {
   is_pinned: 0,
   auto_renew: 1,
   billing_type: 'recurring',
+  start_date: '2026-01-01',
+  total_spent_override: 48,
   created_at: '2026-01-01',
   updated_at: '2026-01-01',
 }
@@ -81,8 +83,9 @@ describe('AddSubscription', () => {
 
       fireEvent.click(screen.getByText('ChatGPT'))
       expect(screen.getByDisplayValue('ChatGPT')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Go' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Plus' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Pro' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Pro 20x' })).toBeInTheDocument()
       expect(screen.getByText('Select a plan')).toBeInTheDocument()
     })
 
@@ -91,9 +94,9 @@ describe('AddSubscription', () => {
       render(<AddSubscription onSave={vi.fn()} onCancel={vi.fn()} />)
 
       await user.click(screen.getByText('ChatGPT'))
-      await user.click(screen.getByRole('button', { name: 'Pro' }))
+      await user.click(screen.getByRole('button', { name: 'Pro 20x' }))
       expect(screen.getByDisplayValue('ChatGPT')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('200')).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('0.00')).toHaveValue(200)
     })
 
     it('goes directly to form for non-tiered preset', async () => {
@@ -103,7 +106,7 @@ describe('AddSubscription', () => {
       fireEvent.change(screen.getByPlaceholderText('Search services...'), { target: { value: 'perplexity' } })
       await user.click(screen.getByText('Perplexity'))
       expect(screen.getByDisplayValue('Perplexity')).toBeInTheDocument()
-      expect(screen.getByDisplayValue('20')).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('0.00')).toHaveValue(20)
     })
 
     it('calls onCancel when back button is clicked in search step', async () => {
@@ -123,7 +126,8 @@ describe('AddSubscription', () => {
         render(<AddSubscription onSave={vi.fn()} onCancel={vi.fn()} />)
 
         fireEvent.click(screen.getByText('ChatGPT'))
-        expect(screen.getByText('2026/03/23')).toBeInTheDocument()
+        // Both next-billing and start-date default to today's local date
+        expect(screen.getAllByText('2026/03/23').length).toBeGreaterThan(0)
       } finally {
         vi.useRealTimers()
       }
@@ -228,6 +232,8 @@ describe('AddSubscription', () => {
         password: null,
         notes: null,
         auto_renew: 1,
+        start_date: '2026-01-01',
+        total_spent_override: 48,
         billing_type: 'recurring',
       }, undefined)
     })

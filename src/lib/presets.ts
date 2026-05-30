@@ -3,10 +3,12 @@ import type { ServicePreset } from '../types'
 export const SERVICE_PRESETS: ServicePreset[] = [
   // AI — tiered
   {
-    name: 'ChatGPT', iconKey: 'OpenAI', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai',
+    name: 'ChatGPT', iconKey: 'OpenAI', defaultAmount: 8, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai',
     tiers: [
+      { name: 'Go', amount: 8, currency: 'USD', cycle: 'monthly' },
       { name: 'Plus', amount: 20, currency: 'USD', cycle: 'monthly' },
-      { name: 'Pro', amount: 200, currency: 'USD', cycle: 'monthly' },
+      { name: 'Pro 5x', amount: 100, currency: 'USD', cycle: 'monthly' },
+      { name: 'Pro 20x', amount: 200, currency: 'USD', cycle: 'monthly' },
     ],
   },
   {
@@ -18,10 +20,11 @@ export const SERVICE_PRESETS: ServicePreset[] = [
     ],
   },
   {
-    name: 'Gemini', iconKey: 'Gemini', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai',
+    name: 'Google AI', iconKey: 'Gemini', defaultAmount: 8, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai',
     tiers: [
-      { name: 'Advanced', amount: 20, currency: 'USD', cycle: 'monthly' },
-      { name: 'Ultra', amount: 250, currency: 'USD', cycle: 'monthly' },
+      { name: 'Plus', amount: 8, currency: 'USD', cycle: 'monthly' },
+      { name: 'Pro', amount: 20, currency: 'USD', cycle: 'monthly' },
+      { name: 'Ultra', amount: 100, currency: 'USD', cycle: 'monthly' },
     ],
   },
   {
@@ -57,7 +60,7 @@ export const SERVICE_PRESETS: ServicePreset[] = [
   { name: 'Codex', iconKey: 'Codex', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Antigravity', iconKey: 'Antigravity', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Claude Code', iconKey: 'ClaudeCode', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
-  { name: 'Google AI Studio', iconKey: 'AiStudio', defaultAmount: 19.99, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
+  { name: 'Google AI Studio', iconKey: 'AiStudio', defaultAmount: 19.99, defaultCurrency: 'USD', defaultCycle: 'monthly', defaultBillingType: 'prepaid', category: 'ai' },
   { name: 'Manus', iconKey: 'Manus', defaultAmount: 39, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'OpenClaw', iconKey: 'OpenClaw', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Qoder', iconKey: 'Qoder', defaultAmount: 19, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },

@@ -50,7 +50,7 @@ export default function OverviewRow({ monthlyTotal, cumulativeTotal, dailyAverag
       </div>
 
       {/* Secondary stats */}
-      <div className="flex items-baseline flex-wrap mt-1.5 text-[11px] leading-tight">
+      <div className="flex items-baseline flex-nowrap whitespace-nowrap mt-1.5 text-[11px] leading-tight">
         <span className="font-numeric text-text-secondary">{formatAmount(dailyAverage, currency)}</span>
         <span className="text-text-quaternary">{t('overview.daily')}</span>
         <span className="text-text-quaternary mx-1">·</span>

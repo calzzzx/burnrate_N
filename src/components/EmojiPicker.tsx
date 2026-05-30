@@ -27,9 +27,11 @@ interface Props {
   onSelect: (emoji: string) => void
   onClose: () => void
   lang?: 'en' | 'zh'
+  onResetDefault?: () => void
+  resetLabel?: string
 }
 
-export default function EmojiPicker({ onSelect, onClose, lang = 'zh' }: Props) {
+export default function EmojiPicker({ onSelect, onClose, lang = 'zh', onResetDefault, resetLabel }: Props) {
   const [activeGroup, setActiveGroup] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -48,6 +50,20 @@ export default function EmojiPicker({ onSelect, onClose, lang = 'zh' }: Props) {
       ref={ref}
       className="absolute top-full left-0 mt-1.5 z-50 w-[220px] rounded-[12px] bg-[rgba(30,30,32,0.96)] border border-white/[0.08] shadow-xl shadow-black/40 backdrop-blur-xl overflow-hidden"
     >
+      {/* Restore default icon */}
+      {onResetDefault && (
+        <button
+          onClick={onResetDefault}
+          className="flex items-center gap-1.5 w-full px-2.5 py-1.5 text-[11px] text-white/60 hover:text-white/90 hover:bg-white/[0.06] cursor-default transition-colors border-b border-white/[0.06]"
+        >
+          <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          {resetLabel}
+        </button>
+      )}
+
       {/* Group tabs */}
       <div className="flex items-center gap-0.5 px-2 pt-2 pb-1">
         {EMOJI_GROUPS.map((g, i) => (

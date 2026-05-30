@@ -10,7 +10,7 @@ import {
   getTopupTotals,
   addTopup as dbAddTopup,
 } from '../lib/db'
-import { toMonthly, toDaily, formatAmount, advanceBillingDate, isExpired } from '../lib/format'
+import { toMonthly, toDaily, formatAmount, advanceBilling, isExpired, subscriptionTotalSpent } from '../lib/format'
 import { type ExchangeRates, convertAmount } from '../lib/currency'
 
 export function useSubscriptions(displayCurrency: string, exchangeRates: ExchangeRates | null, trayDisplay: 'monthly' | 'daily') {
@@ -29,12 +29,15 @@ export function useSubscriptions(displayCurrency: string, exchangeRates: Exchang
       const updated = await Promise.all(
         subs.map(async (sub) => {
           if (sub.billing_type === 'prepaid' || !sub.auto_renew) return sub
-          const advanced = advanceBillingDate(sub.next_billing, sub.cycle)
-          if (advanced !== sub.next_billing) {
-            await dbUpdate(sub.id, { next_billing: advanced })
-            return { ...sub, next_billing: advanced }
+          const { date: advanced, cycles } = advanceBilling(sub.next_billing, sub.cycle, sub.start_date)
+          if (advanced === sub.next_billing) return sub
+          const patch: Partial<Subscription> = { next_billing: advanced }
+          // Materialized cumulative grows one charge (at the current amount) per elapsed cycle
+          if (sub.total_spent_override != null && cycles > 0) {
+            patch.total_spent_override = sub.total_spent_override + cycles * sub.amount
           }
-          return sub
+          await dbUpdate(sub.id, patch)
+          return { ...sub, ...patch }
         })
       )
 
@@ -85,12 +88,17 @@ export function useSubscriptions(displayCurrency: string, exchangeRates: Exchang
     [activeSubscriptions, toDisplay]
   )
 
+  // Cumulative spend ("已花费") covers all recurring subs, including archived ones — their
+  // historical spend still belongs in the lifetime total. Archived subs cap the
+  // auto-computation at their expiry date so it stops accruing after they expire.
   const cumulativeTotal = useMemo(() =>
-    activeSubscriptions.reduce(
-      (sum, sub) => sum + toDisplay(sub.amount, sub.currency),
-      0
-    ),
-    [activeSubscriptions, toDisplay]
+    recurringAll.reduce((sum, sub) => {
+      const asOf = isExpired(sub.auto_renew, sub.next_billing)
+        ? new Date(sub.next_billing + 'T00:00:00')
+        : undefined
+      return sum + toDisplay(subscriptionTotalSpent(sub, asOf), sub.currency)
+    }, 0),
+    [recurringAll, toDisplay]
   )
 
   const dailyAverage = useMemo(() => toDaily(monthlyTotal), [monthlyTotal])

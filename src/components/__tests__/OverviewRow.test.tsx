@@ -27,7 +27,7 @@ describe('OverviewRow', () => {
   it('renders cumulative total', () => {
     render(<OverviewRow {...defaults} />)
     expect(screen.getByText('$1,404')).toBeInTheDocument()
-    expect(screen.getByText('total')).toBeInTheDocument()
+    expect(screen.getByText('spent')).toBeInTheDocument()
   })
 
   it('renders daily average', () => {

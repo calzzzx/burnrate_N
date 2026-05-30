@@ -50,7 +50,7 @@ describe('FuzzySearch', () => {
     await user.click(screen.getByText('ChatGPT'))
     expect(onSelect).toHaveBeenCalledOnce()
     expect(onSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'ChatGPT', defaultAmount: 20 })
+      expect.objectContaining({ name: 'ChatGPT', defaultAmount: 8 })
     )
   })
 

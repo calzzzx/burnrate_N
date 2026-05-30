@@ -22,6 +22,8 @@ function makeSub(overrides: Partial<Subscription> = {}): Subscription {
     is_pinned: 0,
     auto_renew: 1,
     billing_type: 'recurring',
+    start_date: '2026-01-01',
+    total_spent_override: null,
     created_at: '2026-01-01',
     updated_at: '2026-01-01',
     ...overrides,

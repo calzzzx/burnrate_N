@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Subscription, BillingCycle, BillingType, ServicePreset, Topup } from '../types'
-import { formatAmount } from '../lib/format'
+import { formatAmount, computeTotalSpent } from '../lib/format'
 import { getFavoritePresets, toggleFavoritePreset, getTopups, addTopup, deleteTopup } from '../lib/db'
 import { SERVICE_PRESETS } from '../lib/presets'
 import FuzzySearch from './FuzzySearch'
@@ -27,9 +27,12 @@ interface Props {
     password: string | null
     notes: string | null
     auto_renew: number
+    start_date: string
+    total_spent_override: number | null
   }, initialTopup?: number) => void
   onDelete?: () => void
   onCancel: () => void
+  onTopupsChanged?: () => void
   saveError?: boolean
   initialStep?: 'search' | 'form' | 'topups'
 }
@@ -75,7 +78,7 @@ function fullDate(dateStr: string): string {
 
 const sectionClass = 'text-[11px] text-text-quaternary mb-1.5 block font-medium tracking-wider uppercase'
 
-export default function AddSubscription({ editing, onSave, onDelete, onCancel, saveError, initialStep }: Props) {
+export default function AddSubscription({ editing, onSave, onDelete, onCancel, onTopupsChanged, saveError, initialStep }: Props) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language === 'zh' ? 'zh' : 'en'
   const [step, setStep] = useState<'search' | 'form' | 'topups'>(initialStep || (editing ? 'form' : 'search'))
@@ -89,6 +92,14 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
   const [tier, setTier] = useState<string | null>(editing?.tier || null)
   const [autoRenew, setAutoRenew] = useState(editing ? editing.auto_renew !== 0 : true)
   const [nextBilling, setNextBilling] = useState(editing?.next_billing || todayStr())
+  const [startDate, setStartDate] = useState(editing?.start_date || todayStr())
+  // Cumulative spend is a stored running total: seeded from the saved value (or the auto
+  // default), edited directly, and never re-linked to the amount field.
+  const [spentInput, setSpentInput] = useState(
+    editing
+      ? String(editing.total_spent_override ?? Math.round(computeTotalSpent(editing.amount, editing.cycle, editing.start_date || todayStr()) * 100) / 100)
+      : ''
+  )
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [account, setAccount] = useState(editing?.account || '')
   const [password, setPassword] = useState(editing?.password || '')
@@ -151,6 +162,7 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
     const updated = await getTopups(editing.id)
     setTopups(updated)
     setTopupAmount('')
+    onTopupsChanged?.()
   }
 
   async function handleDeleteTopup(id: string) {
@@ -158,6 +170,7 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
     await deleteTopup(id)
     const updated = await getTopups(editing.id)
     setTopups(updated)
+    onTopupsChanged?.()
   }
 
   // Parse existing payment_channel into method + last4
@@ -271,6 +284,14 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
       password: password || null,
       notes: notes.trim() || null,
       auto_renew: billingType === 'prepaid' ? 0 : (autoRenew ? 1 : 0),
+      start_date: billingType === 'prepaid' ? todayStr() : startDate,
+      // Store the cumulative as an absolute value (the auto default if untouched); it then
+      // grows one charge per cycle and is no longer tied to the amount field
+      total_spent_override: billingType === 'prepaid'
+        ? null
+        : (spentInput === ''
+            ? Math.round(computeTotalSpent(parseFloat(amount) || 0, cycle, startDate) * 100) / 100
+            : (parseFloat(spentInput) || 0)),
     }, initialTopup)
   }
 
@@ -436,7 +457,9 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
       {/* Header */}
       <div className="flex items-center justify-between px-3 pt-3 pb-1.5">
         <h2 className="text-[14px] font-semibold text-text-primary">
-          {editing ? t('form.edit') : t('form.add')}
+          {editing
+            ? (billingType === 'prepaid' ? t('form.editPrepaid') : t('form.edit'))
+            : t('form.add')}
         </h2>
         <button
           onClick={onCancel}
@@ -457,10 +480,16 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
             <button
               type="button"
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-              className="cursor-default"
+              className="group relative block rounded-[11px] cursor-default"
               title={t('form.emojiIconTitle')}
             >
               <ServiceIcon iconKey={iconKey} name={name || '?'} size="lg" />
+              <span className="absolute inset-0 flex items-center justify-center rounded-[11px] bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity duration-150" aria-hidden="true">
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+              </span>
             </button>
             {showEmojiPicker && (
               <EmojiPicker
@@ -470,6 +499,11 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
                   setShowEmojiPicker(false)
                 }}
                 onClose={() => setShowEmojiPicker(false)}
+                onResetDefault={iconKey?.startsWith('emoji:') ? () => {
+                  setIconKey(SERVICE_PRESETS.find((p) => p.name === name)?.iconKey ?? null)
+                  setShowEmojiPicker(false)
+                } : undefined}
+                resetLabel={t('form.restoreDefaultIcon')}
               />
             )}
           </div>
@@ -659,8 +693,33 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
                     />
                   </button>
                 </FormRow>
-                <FormRow label={autoRenew ? t('form.nextBilling') : t('form.expiryDate')} last>
+                <FormRow label={autoRenew ? t('form.nextBilling') : t('form.expiryDate')}>
                   <DatePicker value={nextBilling} onChange={setNextBilling} />
+                </FormRow>
+                <FormRow label={t('form.startDate')}>
+                  <DatePicker
+                    value={startDate}
+                    onChange={(v) => {
+                      setStartDate(v)
+                      const amt = parseFloat(amount) || 0
+                      setSpentInput(amt > 0 ? String(Math.round(computeTotalSpent(amt, cycle, v) * 100) / 100) : '')
+                    }}
+                  />
+                </FormRow>
+                <FormRow label={t('form.totalSpent')} last>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    value={spentInput}
+                    onChange={(e) => {
+                      const v = e.target.value
+                      if (v === '' || /^\d*\.?\d{0,2}$/.test(v)) setSpentInput(v)
+                    }}
+                    step="1"
+                    min="0"
+                    placeholder="0"
+                    className="bg-transparent text-[13px] font-numeric text-text-primary text-right outline-none w-20 min-w-0 placeholder:text-text-tertiary"
+                  />
                 </FormRow>
               </div>
             </div>
@@ -737,10 +796,9 @@ export default function AddSubscription({ editing, onSave, onDelete, onCancel, s
               >
                 {showPassword ? (
                   <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M2 2l12 12" />
-                    <path d="M6.5 6.5a2 2 0 0 0 3 3" />
-                    <path d="M3.5 3.5C2 5 1 8 1 8s2.5 5 7 5c1.5 0 2.8-.5 3.8-1.2" />
-                    <path d="M11 11c1.5-1.3 4-3 4-3s-2.5-5-7-5c-.7 0-1.4.1-2 .3" />
+                    <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" />
+                    <circle cx="8" cy="8" r="2" />
+                    <path d="M2.5 2.5l11 11" />
                   </svg>
                 ) : (
                   <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

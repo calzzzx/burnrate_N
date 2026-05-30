@@ -1,4 +1,4 @@
-import type { BillingCycle } from '../types'
+import type { BillingCycle, Subscription } from '../types'
 import i18n from '../i18n'
 
 const LOCALE_MAP: Record<string, string> = {
@@ -63,11 +63,13 @@ export function shortDate(dateStr: string): string {
   return `${d.getMonth() + 1}/${d.getDate()}`
 }
 
-/** Format date as "Mon DD", e.g. "Mar 28" — locale-aware */
+/** Format date as "Mon DD", e.g. "Mar 28" — locale-aware. Includes the year when it differs from the current year. */
 export function mediumDate(dateStr: string): string {
   const d = parseLocalDate(dateStr)
   const locale = LOCALE_MAP[i18n.language] || 'en-US'
-  return d.toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric'
+  return d.toLocaleDateString(locale, opts)
 }
 
 /** Whether a subscription is expired (auto-renew off + past expiry) */
@@ -89,17 +91,87 @@ export function toDaily(monthlyTotal: number): number {
   return monthlyTotal * 12 / 365.25
 }
 
-export function advanceBillingDate(nextBilling: string, cycle: BillingCycle): string {
-  const next = parseLocalDate(nextBilling)
+/**
+ * How many times a recurring subscription has been charged from its start date
+ * through today, counting the charge on the start date itself (start today = 1).
+ * Returns 0 if the start date is in the future.
+ */
+export function chargeCount(startDate: string, cycle: BillingCycle, asOf: Date = new Date()): number {
+  const today = new Date(asOf)
+  today.setHours(0, 0, 0, 0)
+  const cursor = parseLocalDate(startDate)
+  if (cursor > today) return 0
+
+  let count = 0
+  while (cursor <= today) {
+    count++
+    if (cycle === 'weekly') cursor.setDate(cursor.getDate() + 7)
+    else cursor.setMonth(cursor.getMonth() + CYCLE_MONTHS[cycle])
+  }
+  return count
+}
+
+/** Auto-computed cumulative spend: per-cycle amount × number of charges so far. */
+export function computeTotalSpent(amount: number, cycle: BillingCycle, startDate: string, asOf?: Date): number {
+  return amount * chargeCount(startDate, cycle, asOf)
+}
+
+/**
+ * A subscription's cumulative spend. Once materialized (total_spent_override set) it is a
+ * stored running total — it does NOT recompute from the current amount, it only grows by
+ * one charge per billing cycle (handled where billing dates advance). Until materialized
+ * it falls back to the auto-computed value.
+ */
+export function subscriptionTotalSpent(sub: Subscription, asOf?: Date): number {
+  if (sub.total_spent_override != null) return sub.total_spent_override
+  const start = sub.start_date || sub.created_at.slice(0, 10)
+  return computeTotalSpent(sub.amount, sub.cycle, start, asOf)
+}
+
+/**
+ * Advance a past-due billing date to the next future one, returning the new date and the
+ * number of cycles (charges) that elapsed. Month-based cycles anchor on the billing
+ * day-of-month (the start date's day when available) and clamp to each target month's
+ * length, so a month-end day stays at month-end (Jan 31 → Feb 28 → Mar 31) instead of
+ * overflowing into the next month.
+ */
+export function advanceBilling(nextBilling: string, cycle: BillingCycle, startDate?: string): { date: string; cycles: number } {
   const now = new Date()
   now.setHours(0, 0, 0, 0)
 
-  while (next < now) {
-    if (cycle === 'weekly') next.setDate(next.getDate() + 7)
-    else next.setMonth(next.getMonth() + CYCLE_MONTHS[cycle])
+  const from = parseLocalDate(nextBilling)
+  // Not due yet — leave the date exactly as set
+  if (from >= now) return { date: formatLocalDate(from), cycles: 0 }
+
+  if (cycle === 'weekly') {
+    const next = from
+    let cycles = 0
+    while (next < now) { next.setDate(next.getDate() + 7); cycles++ }
+    return { date: formatLocalDate(next), cycles }
   }
 
-  return formatLocalDate(next)
+  const step = CYCLE_MONTHS[cycle]
+  const anchorDay = parseLocalDate(startDate || nextBilling).getDate()
+  const dateFor = (y: number, m: number) =>
+    new Date(y, m, Math.min(anchorDay, new Date(y, m + 1, 0).getDate()))
+
+  let year = from.getFullYear()
+  let month = from.getMonth()
+  let next = from
+  let cycles = 0
+  while (next < now) {
+    month += step
+    year += Math.floor(month / 12)
+    month = ((month % 12) + 12) % 12
+    next = dateFor(year, month)
+    cycles++
+  }
+
+  return { date: formatLocalDate(next), cycles }
+}
+
+export function advanceBillingDate(nextBilling: string, cycle: BillingCycle, startDate?: string): string {
+  return advanceBilling(nextBilling, cycle, startDate).date
 }
 
 /** Format a Date as YYYY-MM-DD using local timezone components. */
