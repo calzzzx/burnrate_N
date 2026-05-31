@@ -21,14 +21,14 @@ export default function GatekeeperNote() {
   }
 
   return (
-    <div className="mt-1 w-full max-w-2xl mx-auto rounded-2xl border border-white/[0.07] bg-white/[0.025] backdrop-blur-md p-4 sm:p-5 text-left">
+    <div className="hidden sm:block mt-1 w-full max-w-2xl mx-auto rounded-2xl border border-white/[0.07] bg-white/[0.025] backdrop-blur-md p-4 sm:p-5 text-left">
       <p className="text-[13px] font-semibold text-white/80 tracking-tight">{t.hero.unsignedTitle}</p>
       <p className="mt-1 text-[12.5px] leading-relaxed text-white/40 whitespace-pre-line">{t.hero.unsignedNote}</p>
 
       {/* Terminal-style command line */}
       <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-black/40 pl-3 pr-1.5 py-1.5">
         <span className="select-none font-mono text-[12px] text-white/25 leading-none">$</span>
-        <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-[12px] text-accent/90 leading-none [&::-webkit-scrollbar]:hidden">
+        <code className="flex-1 min-w-0 overflow-x-auto whitespace-nowrap font-mono text-[12px] text-accent/90 leading-none [&::-webkit-scrollbar]:hidden">
           {t.hero.unsignedCmd}
         </code>
         <button
