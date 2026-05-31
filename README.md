@@ -5,82 +5,88 @@
 <h1 align="center">BurnRate</h1>
 
 <p align="center">
-  <strong>Subscription tracker that lives in your macOS menu bar.</strong>
+  <strong>住在 macOS 菜单栏里的订阅管家 —— 让每一笔订阅支出无所遁形。</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/mtskyyy/burnrate/releases/latest">Download</a> ·
-  <a href="https://burnrate.run">Website</a> ·
-  <a href="./README.zh-CN.md">中文</a>
+  <a href="https://github.com/mtskyyy/burnrate/releases/latest">下载</a> ·
+  <a href="https://burnrate.run">官网 &amp; 在线体验</a> ·
+  <a href="./README.en.md">English</a>
 </p>
 
 ---
 
-BurnRate is a lightweight macOS menu bar app that tracks your subscription spending in real-time. Click the menu bar icon, see your burn rate — no windows to manage, no browser tabs to keep open.
+ChatGPT、Netflix、iCloud、各种 SaaS…… 订阅在不知不觉中越积越多，账单却散落各处。**BurnRate 把它们全部收进菜单栏**：点一下火焰图标，月度总支出、今日消耗、累计花费、下次扣费一眼看清 —— 不用打开任何窗口，也不用翻浏览器。
 
-## Features
+> 💡 想先试试？[**burnrate.run**](https://burnrate.run) 首页内嵌了一个可直接操作的完整演示，无需安装即可把玩。
 
-- **Menu bar native** — always one click away, never in the way
-- **80+ service presets** — ChatGPT, Netflix, Figma, AWS, and more with auto-filled pricing
-- **Real-time burn counter** — odometer-style rolling digits showing today's spending as it ticks
-- **Category breakdown** — visualize spending across AI, Dev, Design, Media, Cloud, and more
-- **Multi-currency** — USD, CNY, EUR, JPY with live exchange rate conversion
-- **Prepaid tracking** — track top-up history for cloud credits and prepaid services
-- **Data export / import** — full JSON backup and restore via native file dialog
-- **Bilingual** — English and Simplified Chinese (中文)
-- **Private by design** — all data stored locally in SQLite. No accounts, no cloud, no tracking
+## ✨ 核心卖点
 
-## Install
+- 🔥 **实时消耗计数器** —— 把月度订阅换算成「每秒在燃烧的钱」，里程表式滚动数字逐秒跳动，让消费速度从抽象变得触目惊心。
+- 📊 **真实累计花费** —— 为每个订阅设定开始日期，自动算出你到底为它花了多少钱，数值也可随时手动覆盖。
+- 🧾 **一览式总览** —— 月度总额、日均消耗、累计已花费、订阅数量、分类占比，一个面板全部讲清。
+- ⚡ **80+ 服务预设** —— ChatGPT、Claude、Cursor、Netflix、Figma、AWS…… 选中即自动填好图标与价格，模糊搜索秒速添加，也支持完全自定义。
+- 💱 **多币种自动换算** —— 美元、人民币、欧元、日元等按实时汇率统一折算成你的主币种。
+- 💳 **预付费 / 充值追踪** —— 云服务额度、API 充值等预付费服务，完整记录每一笔充值历史。
+- 🔒 **本地优先，绝对私密** —— 所有数据仅存于本地 SQLite，无账号、不联网、不追踪，支持一键导出 / 导入 JSON 备份。
+- 🌗 **中英双语** —— 跟随偏好一键切换界面语言。
+- 🪶 **极致轻量** —— Rust + Tauri 原生构建，安装包仅约 7 MB，常驻菜单栏几乎不占资源。
 
-Grab the latest `.dmg` from [**Releases**](https://github.com/mtskyyy/burnrate/releases/latest).
+## 安装
 
-Open the `.dmg` → drag BurnRate into Applications → launch. The flame icon appears in your menu bar.
+从 [**Releases**](https://github.com/mtskyyy/burnrate/releases/latest) 下载最新 `.dmg`，打开后把 BurnRate 拖入「应用程序」，启动即可 —— 火焰图标会出现在菜单栏。
 
-**Requirements:** macOS 12 Monterey or later · Apple Silicon (M1+)
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19 · TypeScript · Tailwind CSS 4 |
-| Backend | Tauri 2 · Rust |
-| Database | SQLite |
-| i18n | i18next |
-| Website | Next.js 15 · Framer Motion · Vercel |
-
-## Development
+应用未做 Apple 公证（注册开发者每年需 99 美元），所以首次打开前请在「终端」执行一次下面的命令以跳过验证：
 
 ```bash
-# Install dependencies
+xattr -dr com.apple.quarantine /Applications/BurnRate.app
+```
+
+**系统要求：** macOS 12 Monterey 或更高版本 · Apple 芯片（M1 及更新机型）
+
+## 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端 | React 19 · TypeScript · Tailwind CSS 4 |
+| 后端 | Tauri 2 · Rust |
+| 数据库 | SQLite |
+| 国际化 | i18next |
+| 官网 | Next.js 15 · Framer Motion · Vercel |
+
+## 本地开发
+
+```bash
+# 安装依赖
 pnpm install
 
-# Run in development
+# 开发模式运行
 pnpm tauri dev
 
-# Build for production
+# 构建生产版本
 pnpm tauri build
 ```
 
-## Project Structure
+## 项目结构
 
 ```
-src/                    # React frontend
-├── components/         # UI components (Panel, BurnCounter, Settings, ...)
-├── hooks/              # useSubscriptions, useSettings
-├── lib/                # presets, categories, format, currency, db
-├── i18n/               # en.json, zh.json
-└── types/              # TypeScript interfaces
+src/                    # React 前端
+├── components/         # UI 组件（Panel、BurnCounter、Settings 等）
+├── hooks/              # useSubscriptions、useSettings
+├── lib/                # 预设服务、分类、格式化、汇率、数据库
+├── i18n/               # en.json、zh.json
+└── types/              # TypeScript 类型定义
 
-src-tauri/              # Rust backend
+src-tauri/              # Rust 后端
 ├── src/
-│   ├── lib.rs          # App setup, plugins, system tray
-│   └── commands.rs     # Tauri IPC commands
+│   ├── lib.rs          # 应用初始化、插件注册、系统托盘
+│   └── commands.rs     # Tauri IPC 命令
 └── Cargo.toml
 
-website/                # Product landing page
+website/                # 产品落地页（内嵌可交互演示）
 └── src/                # Next.js 15 + Framer Motion
 ```
 
-## License
+## 开源协议
 
 MIT
