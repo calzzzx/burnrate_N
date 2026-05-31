@@ -245,7 +245,7 @@ export default function ProductShowcase() {
   return (
     <section ref={ref} className="relative py-16 sm:py-28 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 sm:items-stretch gap-10 sm:gap-14 max-w-[280px] sm:max-w-[900px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 sm:items-stretch gap-8 sm:gap-14 max-w-[280px] sm:max-w-[900px] mx-auto">
           {cards.map((card, i) => (
             <motion.div
               key={i}
@@ -260,8 +260,8 @@ export default function ProductShowcase() {
                   {card.mockup}
                 </div>
               </div>
-              <h3 className="mt-6 text-[15px] font-semibold text-white/80">{card.label}</h3>
-              <p className="mt-1 text-[13px] text-white/30 text-center">{card.desc}</p>
+              <h3 className="mt-6 text-base font-semibold text-white/80">{card.label}</h3>
+              <p className="mt-1.5 text-[13px] text-white/30 text-center">{card.desc}</p>
             </motion.div>
           ))}
         </div>

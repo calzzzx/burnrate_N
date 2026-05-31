@@ -25,7 +25,7 @@ export default function Nav() {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <img src="/icon.png" alt="BurnRate" className="w-7 h-7 rounded-lg" />
           <span className="font-semibold tracking-tight text-[15px]">

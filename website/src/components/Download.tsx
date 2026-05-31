@@ -14,7 +14,7 @@ export default function Download() {
     <section
       ref={ref}
       id="download"
-      className="relative py-20 sm:py-40 overflow-hidden"
+      className="relative py-20 sm:py-32 overflow-hidden"
     >
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-accent/[0.04] rounded-full blur-[100px] pointer-events-none" />

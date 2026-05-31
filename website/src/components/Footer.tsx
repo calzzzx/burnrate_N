@@ -9,7 +9,7 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-white/[0.08] py-10">
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-5 text-sm">
           <span className="text-white/40">© {year} {t.footer.rights}</span>
           <div className="flex items-center gap-6">

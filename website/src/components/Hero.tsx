@@ -117,7 +117,7 @@ export default function Hero() {
       >
         <motion.h1
           variants={fadeUp}
-          className="text-[28px] sm:text-6xl font-bold tracking-tight leading-[1.1] whitespace-pre-line"
+          className="text-3xl sm:text-6xl font-bold tracking-tight leading-[1.1] whitespace-pre-line"
         >
           <span className="bg-gradient-to-b from-white via-white to-white/50 bg-clip-text text-transparent">
             {t.hero.title}

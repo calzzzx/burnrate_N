@@ -100,13 +100,13 @@ export default function AppShowcase() {
   ]
 
   return (
-    <section ref={ref} className="relative py-20 sm:py-36 overflow-hidden">
+    <section ref={ref} className="relative py-16 sm:py-28 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="text-center mb-14"
+          className="text-center mb-10 sm:mb-16"
         >
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight whitespace-pre-line">
             <span className="bg-gradient-to-b from-white via-white to-white/50 bg-clip-text text-transparent">
@@ -136,10 +136,10 @@ export default function AppShowcase() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-14 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5"
+          className="mt-12 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5"
         >
           {highlights.map((item, i) => (
-            <div key={i} className="p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+            <div key={i} className="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-lg bg-accent/[0.08] border border-accent/[0.12] flex items-center justify-center shrink-0">
                   {item.icon}

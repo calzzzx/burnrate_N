@@ -80,7 +80,7 @@ export default function BurnShowcase() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 sm:py-40 overflow-hidden"
+      className="relative py-20 sm:py-32 overflow-hidden"
     >
       <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <motion.h2

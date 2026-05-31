@@ -1,5 +1,30 @@
 @import "tailwindcss";
 
+/*
+ * ─── Responsive scale (mobile-first; `sm:` = ≥640px → desktop) ───────────────
+ * Keep marketing sections on this scale so mobile and desktop stay consistent.
+ *
+ * Type            mobile → sm+
+ *   display        text-3xl  sm:text-6xl    hero & final-CTA titles
+ *   h2 (section)   text-3xl  sm:text-5xl    section titles
+ *   h3 (card)      text-base sm:text-lg     card titles
+ *   lead           text-base sm:text-lg     section subtitles
+ *   body           text-sm   sm:text-[15px] paragraphs / card body
+ *   caption        text-[13px]              meta · badges · footnotes
+ *   micro          text-[11px]              tiny labels
+ *
+ * Spacing
+ *   section pad    py-16 sm:py-28           (emphasis: Burn/Download → py-20 sm:py-32)
+ *   header → body  mb-10 sm:mb-16
+ *   container      max-w-* mx-auto px-4 sm:px-6
+ *
+ * Components
+ *   card           p-5 sm:p-7 rounded-2xl
+ *   button         px-6 py-3 rounded-full · text-sm sm:text-base
+ *   icon box       w-9 h-9 sm:w-10 sm:h-10 rounded-xl
+ * ────────────────────────────────────────────────────────────────────────────
+ */
+
 @theme {
   --color-accent: #E8A838;
   --color-accent-dim: rgba(232, 168, 56, 0.6);

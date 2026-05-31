@@ -39,12 +39,12 @@ export default function Features() {
   ]
 
   return (
-    <section ref={ref} className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-36">
+    <section ref={ref} className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-28">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7 }}
-        className="text-center mb-16"
+        className="text-center mb-10 sm:mb-16"
       >
         <h2 className="text-3xl sm:text-5xl font-bold tracking-tight whitespace-pre-line">
           <span className="text-white">{t.features.heading}</span>
@@ -60,13 +60,13 @@ export default function Features() {
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.15 + i * 0.1 }}
-            className="group/card p-4 sm:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300"
+            className="group/card p-5 sm:p-7 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300"
           >
-            <div className="w-10 h-10 rounded-xl bg-accent/[0.08] border border-accent/[0.12] flex items-center justify-center mb-5 text-accent group-hover/card:bg-accent/[0.14] group-hover/card:border-accent/[0.2] transition-all duration-300">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-accent/[0.08] border border-accent/[0.12] flex items-center justify-center mb-4 sm:mb-5 text-accent group-hover/card:bg-accent/[0.14] group-hover/card:border-accent/[0.2] transition-all duration-300">
               {f.icon}
             </div>
-            <h3 className="text-lg font-semibold text-white/90">{f.title}</h3>
-            <p className="mt-2.5 text-[15px] text-white/35 leading-relaxed">
+            <h3 className="text-base sm:text-lg font-semibold text-white/90">{f.title}</h3>
+            <p className="mt-2 text-sm sm:text-[15px] text-white/35 leading-relaxed">
               {f.desc}
             </p>
           </motion.div>
