@@ -55,7 +55,7 @@ export function useSettings() {
   const updateSetting = useCallback(async <K extends keyof Settings>(key: K, value: Settings[K]) => {
     const dbKey = key as string
     setSettings((prev) => ({ ...prev, [key]: value }))
-    await dbSetSetting(dbKey, value)
+    await dbSetSetting(dbKey, String(value))
     if (key === 'language') {
       i18n.changeLanguage(value as string)
     }
