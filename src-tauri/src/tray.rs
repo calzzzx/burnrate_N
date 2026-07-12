@@ -2,7 +2,7 @@ use tauri::{
     image::Image,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
-    AppHandle, Manager, Runtime,
+    AppHandle, Emitter, Manager, Runtime,
 };
 
 const PANEL_WIDTH: f64 = 288.0;
@@ -25,9 +25,14 @@ pub fn create_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
             }
         })
         .on_tray_icon_event(|tray, event| {
+            #[cfg(debug_assertions)]
+            eprintln!("[BurnRate tray] event: {event:?}");
+
             if let TrayIconEvent::Click {
                 button: MouseButton::Left,
-                button_state: MouseButtonState::Up,
+                // Fullscreen apps can take ownership of mouse-up before the
+                // status item receives it, so open the panel on mouse-down.
+                button_state: MouseButtonState::Down,
                 rect,
                 ..
             } = event
@@ -49,6 +54,13 @@ fn bring_panel_to_front<R: Runtime>(app: &AppHandle<R>, window: &tauri::WebviewW
     use objc2_app_kit::{NSApplication, NSWindow};
     use objc2_foundation::MainThreadMarker;
 
+    // Fullscreen apps can cause a transient focus-loss event while AppKit is
+    // activating this accessory app. Keep the panel alive through that handoff.
+    crate::commands::IGNORE_BLUR.store(true, std::sync::atomic::Ordering::SeqCst);
+
+    #[cfg(debug_assertions)]
+    eprintln!("[BurnRate tray] showing panel");
+
     let _ = app.show();
     let _ = window.unminimize();
     let _ = window.show();
@@ -68,6 +80,11 @@ fn bring_panel_to_front<R: Runtime>(app: &AppHandle<R>, window: &tauri::WebviewW
             }
         }
     });
+
+    std::thread::spawn(|| {
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        crate::commands::IGNORE_BLUR.store(false, std::sync::atomic::Ordering::SeqCst);
+    });
 }
 
 fn toggle_panel<R: Runtime>(
@@ -75,7 +92,11 @@ fn toggle_panel<R: Runtime>(
     rect: &tauri::Rect,
 ) {
     if let Some(window) = app.get_webview_window("panel") {
-        if window.is_visible().unwrap_or(false) {
+        let visible = window.is_visible().unwrap_or(false);
+        let focused = window.is_focused().unwrap_or(false);
+        #[cfg(debug_assertions)]
+        eprintln!("[BurnRate tray] toggle: visible={visible}, focused={focused}, rect={rect:?}");
+        if visible && focused {
             let _ = window.hide();
             return;
         }
@@ -108,9 +129,11 @@ fn toggle_panel<R: Runtime>(
             (x, y)
         };
 
-        let _ = window.set_position(tauri::Position::Physical(
+        let position_result = window.set_position(tauri::Position::Physical(
             tauri::PhysicalPosition::new(final_x as i32, final_y as i32),
         ));
+        #[cfg(debug_assertions)]
+        eprintln!("[BurnRate tray] position: x={final_x}, y={final_y}, result={position_result:?}");
 
         #[cfg(target_os = "macos")]
         bring_panel_to_front(app, &window);
@@ -119,5 +142,6 @@ fn toggle_panel<R: Runtime>(
         let _ = window.show();
 
         let _ = window.set_focus();
+        let _ = window.emit("panel-shown", ());
     }
 }
