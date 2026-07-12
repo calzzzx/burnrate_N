@@ -151,6 +151,7 @@ export const SERVICE_PRESETS: ServicePreset[] = [
   { name: '网易云音乐', iconKey: 'NetEaseMusic', defaultAmount: 15, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'entertainment' },
   { name: '爱奇艺', iconKey: 'iQIYI', defaultAmount: 25, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'entertainment' },
   { name: '腾讯视频', iconKey: 'TencentVideo', defaultAmount: 25, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'entertainment' },
+  { name: '汽水音乐', iconKey: 'QishuiMusic', defaultAmount: 15, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'entertainment' },
   { name: '微信读书', iconKey: 'WeChat', defaultAmount: 19, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'entertainment' },
   { name: '百度网盘', iconKey: 'BaiduNetdisk', defaultAmount: 25, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'storage' },
   { name: '腾讯会议', iconKey: 'TencentMeeting', defaultAmount: 25, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'productivity' },

@@ -33,6 +33,7 @@ import tencentMeeting from '../assets/svg-logos/tencent-meeting_logo.svg'
 import zotero from '../assets/svg-logos/zotero_icon.png'
 import wechat from '../assets/svg-logos/WeChat-Icon.svg'
 import overleaf from '../assets/svg-logos/overleaf-logo.svg'
+import qishuiMusic from '../assets/svg-logos/qishui-music_logo.svg'
 
 /** Local icons keyed by the same iconKey used in presets */
 export const LOCAL_ICONS: Record<string, string> = {
@@ -71,4 +72,5 @@ export const LOCAL_ICONS: Record<string, string> = {
   Zotero: zotero,
   WeChat: wechat,
   Overleaf: overleaf,
+  QishuiMusic: qishuiMusic,
 }
