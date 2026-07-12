@@ -129,11 +129,11 @@ fn toggle_panel<R: Runtime>(
             (x, y)
         };
 
-        let position_result = window.set_position(tauri::Position::Physical(
+        let _position_result = window.set_position(tauri::Position::Physical(
             tauri::PhysicalPosition::new(final_x as i32, final_y as i32),
         ));
         #[cfg(debug_assertions)]
-        eprintln!("[BurnRate tray] position: x={final_x}, y={final_y}, result={position_result:?}");
+        eprintln!("[BurnRate tray] position: x={final_x}, y={final_y}, result={_position_result:?}");
 
         #[cfg(target_os = "macos")]
         bring_panel_to_front(app, &window);
