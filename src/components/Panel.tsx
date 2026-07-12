@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { invoke } from '@tauri-apps/api/core'
 import { LogicalSize } from '@tauri-apps/api/dpi'
+import { listen } from '@tauri-apps/api/event'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { Subscription } from '../types'
 import { formatAmount } from '../lib/format'
@@ -76,6 +77,7 @@ export default function Panel() {
   const [saveError, setSaveError] = useState(false)
   const [listMaxHeight, setListMaxHeight] = useState(PANEL_MAX_HEIGHT)
   const errorTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const dismissTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const panelRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const overviewRef = useRef<HTMLDivElement>(null)
@@ -87,6 +89,31 @@ export default function Panel() {
   const initialResizeDone = useRef(false)
   const prevViewRef = useRef<View | null>(null)
   const viewAnimRef = useRef('')
+
+  const cancelDismiss = useCallback(() => {
+    clearTimeout(dismissTimer.current)
+  }, [])
+
+  const hidePanel = useCallback(() => {
+    cancelDismiss()
+    appWindow.hide().catch(() => {})
+  }, [cancelDismiss])
+
+  const scheduleDismiss = useCallback(() => {
+    cancelDismiss()
+    dismissTimer.current = setTimeout(hidePanel, 500)
+  }, [cancelDismiss, hidePanel])
+
+  // A native window stays focused while a fullscreen app's menu bar retracts.
+  // Treat the panel like a system popover: enter to keep it open, otherwise
+  // close it shortly after opening or when the pointer leaves it.
+  useEffect(() => {
+    const unlisten = listen('panel-shown', scheduleDismiss)
+    return () => {
+      cancelDismiss()
+      unlisten.then(fn => fn())
+    }
+  }, [cancelDismiss, scheduleDismiss])
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -263,6 +290,8 @@ export default function Panel() {
   return (
     <div
       ref={panelRef}
+      onMouseEnter={cancelDismiss}
+      onMouseLeave={hidePanel}
       className={`relative w-full ${!isLoading && view === 'list' ? 'h-auto' : 'h-full'} bg-bg-primary rounded-[var(--radius-panel)] border border-white/[0.10] shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.05)] flex flex-col overflow-hidden animate-panel-in origin-top`}
     >
       {isLoading ? (

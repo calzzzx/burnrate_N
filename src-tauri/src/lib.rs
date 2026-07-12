@@ -8,7 +8,9 @@ const PANEL_RADIUS: f64 = 15.0;
 
 #[cfg(target_os = "macos")]
 fn configure_macos_panel_window(window: &tauri::WebviewWindow) -> tauri::Result<()> {
-    use objc2_app_kit::{NSColor, NSWindow};
+    use objc2_app_kit::{
+        NSColor, NSPopUpMenuWindowLevel, NSWindow, NSWindowCollectionBehavior,
+    };
     use objc2_foundation::{ns_string, NSNumber, NSObjectNSKeyValueCoding};
     use objc2_web_kit::WKWebView;
 
@@ -19,6 +21,13 @@ fn configure_macos_panel_window(window: &tauri::WebviewWindow) -> tauri::Result<
         ns_window.setOpaque(false);
         ns_window.setBackgroundColor(Some(&clear));
         ns_window.setHasShadow(true);
+        ns_window.setLevel(NSPopUpMenuWindowLevel);
+        ns_window.setCollectionBehavior(
+            ns_window.collectionBehavior()
+                | NSWindowCollectionBehavior::CanJoinAllSpaces
+                | NSWindowCollectionBehavior::Auxiliary
+                | NSWindowCollectionBehavior::FullScreenAuxiliary,
+        );
 
         if let Some(content_view) = ns_window.contentView() {
             content_view.setWantsLayer(true);
@@ -77,6 +86,11 @@ pub fn run() {
                 let w = window.clone();
                 window.on_window_event(move |event| {
                     if let tauri::WindowEvent::Focused(false) = event {
+                        #[cfg(debug_assertions)]
+                        eprintln!(
+                            "[BurnRate tray] panel lost focus; ignore_blur={}",
+                            commands::IGNORE_BLUR.load(std::sync::atomic::Ordering::Relaxed)
+                        );
                         if !commands::IGNORE_BLUR.load(std::sync::atomic::Ordering::Relaxed) {
                             let _ = w.hide();
                         }
