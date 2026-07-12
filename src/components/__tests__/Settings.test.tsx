@@ -19,6 +19,8 @@ const defaultSettings: SettingsType = {
   language: 'en',
   sort_by: 'next_billing',
   tray_display: 'monthly',
+  bg_opacity: 42,
+  bg_color: 'neutral',
 }
 
 const defaultProps = {

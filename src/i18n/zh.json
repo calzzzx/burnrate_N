@@ -135,6 +135,9 @@
     "clearDataHint": "永久删除所有订阅和充值记录，此操作不可撤销。",
     "about": "关于",
     "website": "产品介绍",
-    "github": "GitHub"
+    "github": "GitHub",
+    "appearanceSection": "外观",
+    "bgOpacity": "底色不透明度",
+    "bgColor": "底色色调"
   }
 }

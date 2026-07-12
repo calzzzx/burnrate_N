@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { open } from '@tauri-apps/plugin-shell'
 import type { Settings as SettingsType } from '../types'
 import { exportData, importData } from '../lib/db'
+import { BG_COLOR_PRESETS } from '../lib/defaults'
 import SegmentedControl from './SegmentedControl'
 import FormRow from './FormRow'
 import appIcon from '../assets/app-icon.png'
@@ -113,6 +114,43 @@ export default function Settings({ settings, onUpdate, onBack, onClearData, onDa
               value={settings.tray_display}
               onChange={(v) => onUpdate('tray_display', v)}
             />
+          </FormRow>
+        </div>
+
+        {/* Appearance */}
+        <label className="text-[11px] text-text-quaternary mb-1.5 block font-medium tracking-wider uppercase">{t('settings.appearanceSection')}</label>
+        <div className="mac-field overflow-hidden">
+          <FormRow label={t('settings.bgOpacity')}>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min={10}
+                max={90}
+                value={settings.bg_opacity}
+                onChange={(e) => onUpdate('bg_opacity', Number(e.target.value))}
+                className="w-20 h-1.5 appearance-none bg-white/[0.12] rounded-full cursor-default accent-accent
+                  [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(232,168,56,0.3)] [&::-webkit-slider-thumb]:cursor-default"
+              />
+              <span className="text-[11px] text-text-tertiary font-numeric w-7 tabular-nums">{settings.bg_opacity}%</span>
+            </div>
+          </FormRow>
+          <FormRow label={t('settings.bgColor')} last>
+            <div className="flex items-center gap-1.5">
+              {BG_COLOR_PRESETS.map((preset) => (
+                <button
+                  key={preset.key}
+                  onClick={() => onUpdate('bg_color', preset.key)}
+                  className={`w-5 h-5 rounded-full cursor-default transition-all border-2 ${
+                    settings.bg_color === preset.key
+                      ? 'border-accent shadow-[0_0_8px_rgba(232,168,56,0.25)] scale-110'
+                      : 'border-white/[0.08] hover:border-white/[0.18]'
+                  }`}
+                  style={{ backgroundColor: `rgba(${preset.rgb.join(', ')}, 0.65)` }}
+                  aria-label={preset.key}
+                  title={preset.key}
+                />
+              ))}
+            </div>
           </FormRow>
         </div>
 
