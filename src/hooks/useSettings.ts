@@ -25,17 +25,21 @@ export function useSettings() {
   useEffect(() => {
     async function load() {
       try {
-        const [currency, lang, sortBy, trayDisplay] = await Promise.all([
+        const [currency, lang, sortBy, trayDisplay, bgOpacity, bgColor] = await Promise.all([
           getSetting('display_currency'),
           getSetting('language'),
           getSetting('sort_by'),
           getSetting('tray_display'),
+          getSetting('bg_opacity'),
+          getSetting('bg_color'),
         ])
         const loaded: Settings = {
           display_currency: currency || SETTING_DEFAULTS.display_currency,
           language: (lang as Settings['language']) || SETTING_DEFAULTS.language,
           sort_by: (sortBy as Settings['sort_by']) || SETTING_DEFAULTS.sort_by,
           tray_display: (trayDisplay as Settings['tray_display']) || SETTING_DEFAULTS.tray_display,
+          bg_opacity: bgOpacity ? Number(bgOpacity) : SETTING_DEFAULTS.bg_opacity,
+          bg_color: bgColor || SETTING_DEFAULTS.bg_color,
         }
         setSettings(loaded)
         i18n.changeLanguage(loaded.language)

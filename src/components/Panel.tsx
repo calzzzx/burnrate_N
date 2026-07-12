@@ -7,6 +7,7 @@ import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { Subscription } from '../types'
 import { formatAmount } from '../lib/format'
 import { clearAllData } from '../lib/db'
+import { BG_COLOR_PRESETS } from '../lib/defaults'
 import { useSubscriptions } from '../hooks/useSubscriptions'
 import { useSettings } from '../hooks/useSettings'
 import OverviewRow from './OverviewRow'
@@ -287,12 +288,18 @@ export default function Panel() {
     prevTabRef.current = listTab
   }
 
+  const bgPreset = BG_COLOR_PRESETS.find(p => p.key === settings.bg_color) || BG_COLOR_PRESETS[0]
+  const bgOpacity = settings.bg_opacity / 100
+
   return (
     <div
       ref={panelRef}
       onMouseEnter={cancelDismiss}
       onMouseLeave={hidePanel}
-      className={`relative w-full ${!isLoading && view === 'list' ? 'h-auto' : 'h-full'} bg-bg-primary rounded-[var(--radius-panel)] border border-white/[0.10] shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.05)] flex flex-col overflow-hidden animate-panel-in origin-top`}
+      className={`relative w-full ${!isLoading && view === 'list' ? 'h-auto' : 'h-full'} rounded-[var(--radius-panel)] border border-white/[0.10] shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.05)] flex flex-col overflow-hidden animate-panel-in origin-top`}
+      style={{
+        backgroundColor: `rgba(${bgPreset.rgb.join(', ')}, ${bgOpacity})`,
+      }}
     >
       {isLoading ? (
         <div className="flex-1 min-h-0 flex items-center justify-center">

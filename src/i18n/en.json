@@ -135,6 +135,9 @@
     "clearDataHint": "This will permanently delete all subscriptions and top-up records.",
     "about": "About",
     "website": "Website",
-    "github": "GitHub"
+    "github": "GitHub",
+    "appearanceSection": "Appearance",
+    "bgOpacity": "Background opacity",
+    "bgColor": "Background tint"
   }
 }

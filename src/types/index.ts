@@ -38,6 +38,8 @@ export interface Settings {
   language: 'en' | 'zh'
   sort_by: 'manual' | 'next_billing' | 'amount'
   tray_display: 'monthly' | 'daily'
+  bg_opacity: number   // 0–100
+  bg_color: string      // preset key: 'neutral' | 'amber' | 'slate' | 'mauve' | 'sage' | 'navy'
 }
 
 export interface ExchangeRate {
