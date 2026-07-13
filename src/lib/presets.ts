@@ -58,6 +58,7 @@ export const SERVICE_PRESETS: ServicePreset[] = [
   { name: 'Z.ai', iconKey: 'ZAI', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Jimeng', iconKey: 'Jimeng', defaultAmount: 69, defaultCurrency: 'CNY', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Codex', iconKey: 'Codex', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
+  { name: 'DeepSeek', iconKey: 'DeepSeek', defaultAmount: 10, defaultCurrency: 'USD', defaultCycle: 'monthly', defaultBillingType: 'prepaid', category: 'ai' },
   { name: 'Antigravity', iconKey: 'Antigravity', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Claude Code', iconKey: 'ClaudeCode', defaultAmount: 20, defaultCurrency: 'USD', defaultCycle: 'monthly', category: 'ai' },
   { name: 'Google AI Studio', iconKey: 'AiStudio', defaultAmount: 19.99, defaultCurrency: 'USD', defaultCycle: 'monthly', defaultBillingType: 'prepaid', category: 'ai' },
